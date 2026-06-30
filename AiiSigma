@@ -24,15 +24,15 @@ local COLORS = {
 }
 
 local States = {
-	Noclip = false,
-	PlayerESP = false,
-	GeneratorESP = false,
-	PalletESP = false,
-	WindowESP = false,
-	InstantHeal = false,
-	InstantHealOthers = false,
-	AutoHealAll = false,
-	AutoLever = false,
+        Noclip = false,
+        PlayerESP = false,
+        GeneratorESP = false,
+        PalletESP = false,
+        WindowESP = false,
+        InstantHeal = false,
+        InstantHealOthers = false,
+        AutoHealAll = false,
+        AutoLever = false,
   AutoDodge = false
 }
 
@@ -1224,13 +1224,13 @@ fbStroke.Color = M.BG_DEEP
 fbStroke.Thickness = 2
 fbStroke.Transparency = 0.3
 
--- ============ MAIN PANEL (compact 300x360) ============
+-- ============ MAIN PANEL (LANDSCAPE 460x255 — lebih leluasa) ============
 UI.MainFrame = Instance.new("Frame", AiiSigma)
 UI.MainFrame.Name = "MainFrame"
 UI.MainFrame.BackgroundColor3 = M.BG_PANEL
 UI.MainFrame.BackgroundTransparency = 0
-UI.MainFrame.Position = UDim2.new(0.5, -150, 0.5, -180)
-UI.MainFrame.Size = UDim2.new(0, 300, 0, 360)
+UI.MainFrame.Position = UDim2.new(0.5, -230, 0.5, -127)
+UI.MainFrame.Size = UDim2.new(0, 460, 0, 255)
 UI.MainFrame.ClipsDescendants = true
 UI.MainFrame.ZIndex = 10
 Instance.new("UICorner", UI.MainFrame).CornerRadius = UDim.new(0, 8)
@@ -1253,9 +1253,21 @@ TopBarLine.Position = UDim2.new(0, 0, 1, 0)
 TopBarLine.BackgroundColor3 = M.LINE
 TopBarLine.BorderSizePixel = 0
 
+-- Logo icon "◈" di kiri title (accent kecil)
+local LogoIcon = Instance.new("TextLabel", UI.TopBar)
+LogoIcon.Size = UDim2.new(0, 20, 1, 0)
+LogoIcon.Position = UDim2.new(0, 10, 0, 0)
+LogoIcon.Text = "◈"
+LogoIcon.Font = FONT
+LogoIcon.TextColor3 = M.TXT
+LogoIcon.TextSize = 14
+LogoIcon.TextXAlignment = Enum.TextXAlignment.Center
+LogoIcon.BackgroundTransparency = 1
+LogoIcon.ZIndex = 13
+
 UI.Title = Instance.new("TextLabel", UI.TopBar)
-UI.Title.Size = UDim2.new(1, -80, 1, 0)
-UI.Title.Position = UDim2.new(0, 12, 0, 0)
+UI.Title.Size = UDim2.new(1, -100, 1, 0)
+UI.Title.Position = UDim2.new(0, 32, 0, 0)
 UI.Title.Text = "AiiSigma"
 UI.Title.Font = FONT
 UI.Title.TextColor3 = M.TXT
@@ -1285,45 +1297,26 @@ CloseBtn.BackgroundTransparency = 1
 CloseBtn.ZIndex = 12
 CloseBtn.AutoButtonColor = false
 
--- ============ TAB STRIP (horizontal scroll, card panjang) ============
+-- ============ SIDEBAR KIRI (tab menu vertikal, POSISI MANUAL) ============
 UI.TabStrip = Instance.new("Frame", UI.MainFrame)
-UI.TabStrip.Size = UDim2.new(1, 0, 0, 34)
+UI.TabStrip.Size = UDim2.new(0, 100, 1, -32)
 UI.TabStrip.Position = UDim2.new(0, 0, 0, 32)
-UI.TabStrip.BackgroundColor3 = M.BG_PANEL
+UI.TabStrip.BackgroundColor3 = M.BG_DEEP
+UI.TabStrip.BackgroundTransparency = 0
 UI.TabStrip.BorderSizePixel = 0
 UI.TabStrip.ZIndex = 11
+UI.TabStrip.ClipsDescendants = true
 
 local TabLine = Instance.new("Frame", UI.TabStrip)
-TabLine.Size = UDim2.new(1, 0, 0, 1)
-TabLine.Position = UDim2.new(0, 0, 1, 0)
-TabLine.BackgroundColor3 = M.LINE
+TabLine.Size = UDim2.new(0, 1, 1, 0)
+TabLine.Position = UDim2.new(1, -1, 0, 0)
+TabLine.BackgroundColor3 = M.LINE_HI
 TabLine.BorderSizePixel = 0
 
--- Horizontal scroll untuk tab (panjang, landscape)
-local TabScroll = Instance.new("ScrollingFrame", UI.TabStrip)
-TabScroll.Size = UDim2.new(1, 0, 1, 0)
-TabScroll.BackgroundTransparency = 1
-TabScroll.ScrollBarThickness = 0
-TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-TabScroll.AutomaticCanvasSize = Enum.AutomaticSize.X
-TabScroll.ScrollingDirection = Enum.ScrollingDirection.X
-TabScroll.ZIndex = 12
-
-local TabListLayout = Instance.new("UIListLayout", TabScroll)
-TabListLayout.FillDirection = Enum.FillDirection.Horizontal
-TabListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-TabListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TabListLayout.Padding = UDim.new(0, 4)
-TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-
-local TabScrollPad = Instance.new("UIPadding", TabScroll)
-TabScrollPad.PaddingLeft = UDim.new(0, 6)
-TabScrollPad.PaddingRight = UDim.new(0, 6)
-
--- ============ CONTENT AREA ============
+-- ============ CONTENT AREA (kanan sidebar) ============
 local Container = Instance.new("Frame", UI.MainFrame)
-Container.Size = UDim2.new(1, 0, 1, -66)
-Container.Position = UDim2.new(0, 0, 0, 66)
+Container.Size = UDim2.new(1, -100, 1, -32)
+Container.Position = UDim2.new(0, 100, 0, 32)
 Container.BackgroundTransparency = 1
 Container.ZIndex = 11
 Container.ClipsDescendants = true
@@ -1373,28 +1366,45 @@ end)
 
 local TabButtons = {}
 local TabPages = {}
+local _tabCounter = 0
+local TAB_HEIGHT = 22   -- tinggi tiap tab card
+local TAB_GAP = 2       -- jarak antar tab
+local TAB_START_Y = 4   -- padding atas sidebar
 
--- CreateTab: bikin tab card PANJANG (auto-size, landscape feel)
-local function CreateTab(name, isDefault)
-    -- Tab card (auto-size lebar, 24px tinggi)
-    local TabBtn = Instance.new("TextButton", TabScroll)
-    TabBtn.AutomaticSize = Enum.AutomaticSize.X
-    TabBtn.Size = UDim2.new(0, 0, 0, 24)
-    TabBtn.BackgroundColor3 = isDefault and M.TXT or M.BG_CARD
+-- CreateTab: bikin tab card SIDEBAR (POSISI MANUAL Y, dengan ICON emoji)
+-- Signature compatible: CreateTab(name, isDefault) — icon opsional ke-3
+-- Untuk backward compat: kalau isDefault adalah string (icon), handle juga
+local function CreateTab(name, isDefault, icon)
+    -- Backward compat: kalau isDefault bukan boolean, anggap itu icon
+    if type(isDefault) == "string" and icon == nil then
+        icon = isDefault
+        isDefault = false
+    end
+    icon = icon or ""
+
+    _tabCounter = _tabCounter + 1
+    local order = _tabCounter
+    local yPos = TAB_START_Y + (order - 1) * (TAB_HEIGHT + TAB_GAP)
+
+    -- Tab card sidebar (posisi Y manual)
+    local TabBtn = Instance.new("TextButton", UI.TabStrip)
+    TabBtn.Size = UDim2.new(1, -8, 0, TAB_HEIGHT)
+    TabBtn.Position = UDim2.new(0, 4, 0, yPos)
+    TabBtn.BackgroundColor3 = isDefault and M.TXT or M.BG_CARD_H
     TabBtn.BackgroundTransparency = 0
     TabBtn.Font = FONT
-    TabBtn.TextSize = 10
-    TabBtn.TextColor3 = isDefault and M.BG_DEEP or M.TXT_DIM
+    TabBtn.TextSize = 11
+    TabBtn.TextColor3 = isDefault and M.BG_DEEP or M.TXT
     TabBtn.AutoButtonColor = false
     TabBtn.ZIndex = 12
-    -- Text dengan padding kanan-kiri biar card jadi panjang
-    TabBtn.Text = "  " .. name .. "  "
-    TabBtn.TextXAlignment = Enum.TextXAlignment.Center
+    -- Text: icon + spasi + nama (mis: "▣  Main")
+    TabBtn.Text = (icon ~= "" and icon .. "  " or "") .. name
+    TabBtn.TextXAlignment = Enum.TextXAlignment.Left
     Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 4)
 
-    local TabPad = Instance.new("UIPadding", TabBtn)
-    TabPad.PaddingLeft = UDim.new(0, 10)
-    TabPad.PaddingRight = UDim.new(0, 10)
+    -- Padding kiri supaya text gak nempel edge
+    local TPad = Instance.new("UIPadding", TabBtn)
+    TPad.PaddingLeft = UDim.new(0, 8)
 
     -- Page (ScrollingFrame, scrollable)
     local Page = Instance.new("ScrollingFrame", Container)
@@ -1423,8 +1433,8 @@ local function CreateTab(name, isDefault)
     TabBtn.MouseButton1Click:Connect(function()
         for _, p in pairs(TabPages) do p.Visible = false end
         for _, b in pairs(TabButtons) do
-            b.BackgroundColor3 = M.BG_CARD
-            b.TextColor3 = M.TXT_DIM
+            b.BackgroundColor3 = M.BG_CARD_H
+            b.TextColor3 = M.TXT
         end
         Page.Visible = true
         TabBtn.BackgroundColor3 = M.TXT
@@ -1435,16 +1445,16 @@ local function CreateTab(name, isDefault)
     TabBtn.MouseEnter:Connect(function()
         if not Page.Visible then
             TweenService:Create(TabBtn, TweenInfo.new(0.12), {
-                BackgroundColor3 = M.BG_CARD_H,
-                TextColor3 = M.TXT_MID
+                BackgroundColor3 = M.BG_CARD_A,
+                TextColor3 = M.TXT
             }):Play()
         end
     end)
     TabBtn.MouseLeave:Connect(function()
         if not Page.Visible then
             TweenService:Create(TabBtn, TweenInfo.new(0.12), {
-                BackgroundColor3 = M.BG_CARD,
-                TextColor3 = M.TXT_DIM
+                BackgroundColor3 = M.BG_CARD_H,
+                TextColor3 = M.TXT
             }):Play()
         end
     end)
@@ -1711,15 +1721,15 @@ UI.MinBtn = UI.FloatingBtn  -- alias, biar kode asli gak error
 -- ============================================================
 -- CREATE TABS (9 tabs)
 -- ============================================================
-local TabMain    = CreateTab("Main",    true)
-local TabEsp     = CreateTab("ESP")
-local TabMisc    = CreateTab("Misc")
-local TabSpeed   = CreateTab("Speed")
-local TabCombat  = CreateTab("Combat")
-local TabKiller  = CreateTab("Killer")
-local TabParry   = CreateTab("Parry")
-local TabMoonwalk= CreateTab("Moonwalk")
-local TabVeil    = CreateTab("Veil")
+local TabMain    = CreateTab("Main",    true,  "▣")
+local TabEsp     = CreateTab("ESP",     false, "👁")
+local TabMisc    = CreateTab("Misc",    false, "✦")
+local TabSpeed   = CreateTab("Speed",   false, "⚡")
+local TabCombat  = CreateTab("Combat",  false, "⚔")
+local TabKiller  = CreateTab("Killer",  false, "☠")
+local TabParry   = CreateTab("Parry",   false, "🛡")
+local TabMoonwalk= CreateTab("Moonwalk",false, "☾")
+local TabVeil    = CreateTab("Veil",    false, "✸")
 
 -- Tampilkan main panel saat start
 UI.MainFrame.Visible = true
