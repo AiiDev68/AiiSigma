@@ -14,24 +14,25 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 local IsMobile = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
 
 if CoreGui:FindFirstChild("MitHub_V3") then CoreGui.MitHub_V3:Destroy() end
+if CoreGui:FindFirstChild("AiiSigma_V1") then CoreGui.AiiSigma_V1:Destroy() end
 
 local COLORS = {
-    THEME = Color3.fromRGB(98, 63, 117),
-    THEME_DARK = Color3.fromRGB(60, 35, 75),
-    THEME_DARKER = Color3.fromRGB(30, 15, 40),
-    THEME_BTN = Color3.fromRGB(75, 45, 95),
+    THEME = Color3.fromRGB(255, 255, 255),
+    THEME_DARK = Color3.fromRGB(32, 33, 40),
+    THEME_DARKER = Color3.fromRGB(22, 23, 28),
+    THEME_BTN = Color3.fromRGB(32, 33, 40),
 }
 
 local States = {
-        Noclip = false,
-        PlayerESP = false,
-        GeneratorESP = false,
-        PalletESP = false,
-        WindowESP = false,
-        InstantHeal = false,
-        InstantHealOthers = false,
-        AutoHealAll = false,
-        AutoLever = false,
+	Noclip = false,
+	PlayerESP = false,
+	GeneratorESP = false,
+	PalletESP = false,
+	WindowESP = false,
+	InstantHeal = false,
+	InstantHealOthers = false,
+	AutoHealAll = false,
+	AutoLever = false,
   AutoDodge = false
 }
 
@@ -1167,227 +1168,548 @@ fovCircle.Color = Color3.fromRGB(255, 255, 255)
 fovCircle.Visible = false
 
 -- ============================================================
--- AiiSigma V1.0 — UI menggunakan Fluent Library
--- Premium Dark Theme, mobile-friendly, robust
+-- AiiSigma V1.0 — UI MINIMAL MONOCHROME
+-- Hitam / Putih / Abu-abu, card kecil, mobile-friendly
+-- Semua signature helper sama dengan asli (compatible)
 -- ============================================================
 
-local Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+-- Palette monochrome — DOMINAN HITAM
+local M = {
+    BG_DEEP   = Color3.fromRGB(5, 6, 8),      -- hitam pekat (top bar)
+    BG_PANEL  = Color3.fromRGB(10, 11, 14),   -- hitam (panel utama)
+    BG_CARD   = Color3.fromRGB(14, 15, 18),   -- hitam sedikit terang (card default)
+    BG_CARD_H = Color3.fromRGB(22, 23, 28),   -- abu gelap (card hover)
+    BG_CARD_A = Color3.fromRGB(30, 31, 36),   -- abu (card active)
+    BG_INPUT  = Color3.fromRGB(6, 7, 9),      -- hitam pekat (input field)
 
-local SaveManager
-local InterfaceManager
-pcall(function()
-    SaveManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/SaveManager.lua"))()
-    InterfaceManager = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scripts/Fluent/master/Addons/InterfaceManager.lua"))()
-end)
+    LINE      = Color3.fromRGB(28, 29, 34),   -- garis gelap
+    LINE_HI   = Color3.fromRGB(45, 46, 52),   -- garis lebih terang
 
--- Tema warna per fitur (untuk accent)
-local THEME = {
-    MAIN     = Color3.fromRGB(148, 163, 184),
-    ESP      = Color3.fromRGB(96, 165, 250),
-    MISC     = Color3.fromRGB(52, 211, 153),
-    SPEED    = Color3.fromRGB(251, 191, 36),
-    COMBAT   = Color3.fromRGB(248, 113, 113),
-    KILLER   = Color3.fromRGB(220, 38, 38),
-    PARRY    = Color3.fromRGB(167, 139, 250),
-    MOONWALK = Color3.fromRGB(45, 212, 191),
-    VEIL     = Color3.fromRGB(244, 114, 182),
-    INFO     = Color3.fromRGB(244, 114, 182),
+    TXT       = Color3.fromRGB(255, 255, 255),
+    TXT_MID   = Color3.fromRGB(190, 192, 200),
+    TXT_DIM   = Color3.fromRGB(130, 132, 142),
+    TXT_FAINT = Color3.fromRGB(80, 82, 90),
+
+    ACCENT    = Color3.fromRGB(255, 255, 255),  -- putih sebagai accent
 }
 
--- Create Window
-local Window = Fluent:CreateWindow({
-    Title = "AiiSigma",
-    SubTitle = "V1.0 - All-in-One Script Hub",
-    TabWidth = 110,
-    Size = UDim2.fromOffset(560, 480),
-    Acrylic = false,
-    Theme = "Dark",
-    MinSize = Vector2.new(470, 380)
-})
-
--- Set accent color (pink veil biar match tema)
-pcall(function()
-    Fluent:SetTheme("Dark")
-    if Fluent.Options then
-        Fluent.Options.AccentColor = THEME.VEIL
-    end
-end)
-
--- UI table (compatibility with old code references like UI.MainFrame.Visible)
-local UI = {}
-UI.MainFrame = Window
-UI.MinBtn = { Visible = false }
-
--- ScreenGui terpisah untuk floating buttons (MobileShootBtn, MyersGrabBtn)
-local AiiSigma = Instance.new("ScreenGui")
-AiiSigma.Name = "AiiSigma_Floating"
+local AiiSigma = Instance.new("ScreenGui", CoreGui)
+AiiSigma.Name = "AiiSigma_V1"
 AiiSigma.ResetOnSpawn = false
 AiiSigma.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 if typeof(syn) == "table" and syn.protect_gui then syn.protect_gui(AiiSigma) end
-AiiSigma.Parent = CoreGui
 
--- Page colors mapping
-local PageColors = {}
+local UI = {}
 
--- ============================================================
--- HELPER FUNCTIONS (Fluent-based, signature-compatible)
--- ============================================================
+-- ============ FLOATING TOGGLE BUTTON (lingkaran kecil) ============
+UI.FloatingBtn = Instance.new("TextButton", AiiSigma)
+UI.FloatingBtn.Size = UDim2.new(0, 44, 0, 44)
+UI.FloatingBtn.Position = UDim2.new(0, 20, 0.5, -22)
+UI.FloatingBtn.BackgroundColor3 = M.TXT
+UI.FloatingBtn.BackgroundTransparency = 0
+UI.FloatingBtn.Text = "A"
+UI.FloatingBtn.Font = Enum.Font.GothamBlack
+UI.FloatingBtn.TextColor3 = M.BG_DEEP
+UI.FloatingBtn.TextSize = 18
+UI.FloatingBtn.AutoButtonColor = false
+UI.FloatingBtn.ZIndex = 100
+UI.FloatingBtn.Visible = false
+Instance.new("UICorner", UI.FloatingBtn).CornerRadius = UDim.new(1, 0)
+local fbStroke = Instance.new("UIStroke", UI.FloatingBtn)
+fbStroke.Color = M.BG_DEEP
+fbStroke.Thickness = 2
+fbStroke.Transparency = 0.3
 
--- CreateTab: bikin Fluent Tab
-local function CreateTab(name, isDefault, color)
-    local tabColor = color or THEME.MAIN
-    local Tab = Window:AddTab({ Title = name, Icon = "" })
-    PageColors[Tab] = tabColor
-    return Tab, tabColor
-end
+-- ============ MAIN PANEL (compact 280x340) ============
+UI.MainFrame = Instance.new("Frame", AiiSigma)
+UI.MainFrame.Name = "MainFrame"
+UI.MainFrame.BackgroundColor3 = M.BG_PANEL
+UI.MainFrame.BackgroundTransparency = 0
+UI.MainFrame.Position = UDim2.new(0.5, -140, 0.5, -170)
+UI.MainFrame.Size = UDim2.new(0, 280, 0, 340)
+UI.MainFrame.ClipsDescendants = true
+UI.MainFrame.ZIndex = 10
+Instance.new("UICorner", UI.MainFrame).CornerRadius = UDim.new(0, 8)
+local mfStroke = Instance.new("UIStroke", UI.MainFrame)
+mfStroke.Color = M.LINE
+mfStroke.Thickness = 1
+mfStroke.Transparency = 0.2
 
--- AddSection: section header
-local function AddSection(page, label)
-    page:AddSection({ Title = label })
-end
+-- ============ TOP BAR (compact 28px) ============
+UI.TopBar = Instance.new("Frame", UI.MainFrame)
+UI.TopBar.Size = UDim2.new(1, 0, 0, 28)
+UI.TopBar.BackgroundColor3 = M.BG_DEEP
+UI.TopBar.BackgroundTransparency = 0.4
+UI.TopBar.BorderSizePixel = 0
+UI.TopBar.ZIndex = 11
 
--- AddToggle: Fluent Toggle (signature sama dengan asli)
-local function AddToggle(page, text, callback, color)
-    return page:AddToggle({
-        Title = text,
-        Default = false,
-        Callback = callback
-    })
-end
+local TopBarLine = Instance.new("Frame", UI.TopBar)
+TopBarLine.Size = UDim2.new(1, 0, 0, 1)
+TopBarLine.Position = UDim2.new(0, 0, 1, 0)
+TopBarLine.BackgroundColor3 = M.LINE
+TopBarLine.BorderSizePixel = 0
 
--- AddButton: Fluent Button (signature sama dengan asli)
-local function AddButton(page, text, callback, color, isFullWidth)
-    return page:AddButton({
-        Title = text,
-        Callback = callback
-    })
-end
+UI.Title = Instance.new("TextLabel", UI.TopBar)
+UI.Title.Size = UDim2.new(1, -60, 1, 0)
+UI.Title.Position = UDim2.new(0, 10, 0, 0)
+UI.Title.Text = "AiiSigma"
+UI.Title.Font = Enum.Font.GothamBold
+UI.Title.TextColor3 = M.TXT
+UI.Title.TextSize = 11
+UI.Title.TextXAlignment = Enum.TextXAlignment.Left
+UI.Title.BackgroundTransparency = 1
 
--- AddInput: helper tambahan untuk TextBox-style input
-local function AddInput(page, title, default, placeholder, numeric, callback)
-    return page:AddInput({
-        Title = title,
-        Default = tostring(default),
-        Placeholder = placeholder or "",
-        Numeric = numeric or false,
-        Callback = callback
-    })
-end
+local TitleVer = Instance.new("TextLabel", UI.TopBar)
+TitleVer.Size = UDim2.new(0, 30, 1, 0)
+TitleVer.Position = UDim2.new(1, -80, 0, 0)
+TitleVer.Text = "V1"
+TitleVer.Font = Enum.Font.GothamBold
+TitleVer.TextColor3 = M.TXT_DIM
+TitleVer.TextSize = 9
+TitleVer.TextXAlignment = Enum.TextXAlignment.Right
+TitleVer.BackgroundTransparency = 1
 
--- AddKeybind: helper tambahan untuk keybind
-local function AddKeybind(page, title, default, callback)
-    return page:AddKeybind({
-        Title = title,
-        Default = default or Enum.KeyCode.Unknown,
-        Callback = callback
-    })
-end
+-- Close button (kecil, gampang dipencet)
+local CloseBtn = Instance.new("TextButton", UI.TopBar)
+CloseBtn.Size = UDim2.new(0, 24, 0, 24)
+CloseBtn.Position = UDim2.new(1, -26, 0.5, -12)
+CloseBtn.Text = "×"
+CloseBtn.TextColor3 = M.TXT_DIM
+CloseBtn.TextSize = 14
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.ZIndex = 12
+CloseBtn.AutoButtonColor = false
 
--- AddDropdown: helper tambahan untuk dropdown
-local function AddDropdown(page, title, values, default, callback)
-    return page:AddDropdown({
-        Title = title,
-        Values = values,
-        Multi = false,
-        Default = default,
-        Callback = callback
-    })
-end
+-- ============ TAB STRIP (horizontal, mini) ============
+UI.TabStrip = Instance.new("Frame", UI.MainFrame)
+UI.TabStrip.Size = UDim2.new(1, 0, 0, 30)
+UI.TabStrip.Position = UDim2.new(0, 0, 0, 28)
+UI.TabStrip.BackgroundColor3 = M.BG_PANEL
+UI.TabStrip.BorderSizePixel = 0
+UI.TabStrip.ZIndex = 11
 
--- AddParagraph: helper tambahan untuk info text
-local function AddParagraph(page, title, content)
-    return page:AddParagraph({
-        Title = title,
-        Content = content
-    })
-end
+local TabLine = Instance.new("Frame", UI.TabStrip)
+TabLine.Size = UDim2.new(1, 0, 0, 1)
+TabLine.Position = UDim2.new(0, 0, 1, 0)
+TabLine.BackgroundColor3 = M.LINE
+TabLine.BorderSizePixel = 0
 
--- makeRow: stub, return page (untuk kompatibilitas)
-local function makeRow(parent, height)
-    return parent
-end
+-- Horizontal scroll untuk tab (kalau layar kekecilan)
+local TabScroll = Instance.new("ScrollingFrame", UI.TabStrip)
+TabScroll.Size = UDim2.new(1, -8, 1, 0)
+TabScroll.Position = UDim2.new(0, 4, 0, 0)
+TabScroll.BackgroundTransparency = 1
+TabScroll.ScrollBarThickness = 0
+TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
+TabScroll.AutomaticCanvasSize = Enum.AutomaticSize.X
+TabScroll.ScrollingDirection = Enum.ScrollingDirection.X
+TabScroll.ZIndex = 12
 
--- makeLabel: stub, return dummy (tidak menampilkan apa-apa, label akan digabung dengan widget)
-local function makeLabel(parent, text, xOff, w)
-    return { Text = text, TextColor3 = Color3.new(), BackgroundTransparency = 1 }
-end
+local TabListLayout = Instance.new("UIListLayout", TabScroll)
+TabListLayout.FillDirection = Enum.FillDirection.Horizontal
+TabListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+TabListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+TabListLayout.Padding = UDim.new(0, 2)
+TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- makeSwitch: return dummy objects (Fluent handle toggle sendiri)
-local function makeSwitch(parent)
-    local dummy = {
-        MouseButton1Click = { Connect = function() end },
-        BackgroundColor3 = Color3.new(),
-        Visible = true
-    }
-    return dummy, {}
-end
+-- ============ CONTENT AREA ============
+local Container = Instance.new("Frame", UI.MainFrame)
+Container.Size = UDim2.new(1, 0, 1, -58)
+Container.Position = UDim2.new(0, 0, 0, 58)
+Container.BackgroundTransparency = 1
+Container.ZIndex = 11
+Container.ClipsDescendants = true
 
--- animSwitch: no-op (Fluent handle animasi sendiri)
-local function animSwitch(Switch, Dot, state)
-    -- no-op
-end
-
--- makeMwSlider: Fluent Slider
-local function makeMwSlider(parent, labelText, key, minVal, maxVal, decimals, MwCfg)
-    parent:AddSlider({
-        Title = labelText,
-        Default = MwCfg[key],
-        Min = minVal,
-        Max = maxVal,
-        Rounding = decimals,
-        Callback = function(Value)
-            MwCfg[key] = Value
+-- ============ MakeDraggable (compact) ============
+local function MakeDraggable(obj)
+    local dragging, dragStart, startPos
+    obj.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true; dragStart = input.Position; startPos = obj.Position
         end
-    })
+    end)
+    UserInputService.InputChanged:Connect(function(input)
+        if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            local delta = input.Position - dragStart
+            obj.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        end
+    end)
+    obj.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then dragging = false end
+    end)
+end
+MakeDraggable(UI.MainFrame)
+
+-- ============ TOGGLE BUTTON (floating ↔ main) ============
+CloseBtn.MouseButton1Click:Connect(function()
+    UI.MainFrame.Visible = false
+    UI.FloatingBtn.Visible = true
+end)
+UI.FloatingBtn.MouseButton1Click:Connect(function()
+    UI.MainFrame.Visible = true
+    UI.FloatingBtn.Visible = false
+end)
+MakeDraggable(UI.FloatingBtn)
+
+-- Hover effect floating button
+UI.FloatingBtn.MouseEnter:Connect(function()
+    TweenService:Create(UI.FloatingBtn, TweenInfo.new(0.15), { BackgroundTransparency = 0.15 }):Play()
+end)
+UI.FloatingBtn.MouseLeave:Connect(function()
+    TweenService:Create(UI.FloatingBtn, TweenInfo.new(0.15), { BackgroundTransparency = 0 }):Play()
+end)
+
+-- ============================================================
+-- HELPER FUNCTIONS (signature-compatible dengan asli)
+-- ============================================================
+
+local TabButtons = {}
+local TabPages = {}
+
+-- CreateTab: bikin tab pill mini horizontal + page scrollable
+local function CreateTab(name, isDefault)
+    -- Tab pill (mini 50x20)
+    local TabBtn = Instance.new("TextButton", TabScroll)
+    TabBtn.AutomaticSize = Enum.AutomaticSize.X
+    TabBtn.Size = UDim2.new(0, 50, 0, 20)
+    TabBtn.BackgroundColor3 = isDefault and M.TXT or M.BG_CARD
+    TabBtn.BackgroundTransparency = 0
+    TabBtn.Text = " " .. name .. " "
+    TabBtn.Font = Enum.Font.GothamSemibold
+    TabBtn.TextSize = 9
+    TabBtn.TextColor3 = isDefault and M.BG_DEEP or M.TXT_DIM
+    TabBtn.AutoButtonColor = false
+    TabBtn.ZIndex = 12
+    Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 4)
+
+    -- Page (ScrollingFrame, scrollable)
+    local Page = Instance.new("ScrollingFrame", Container)
+    Page.Size = UDim2.new(1, 0, 1, 0)
+    Page.BackgroundTransparency = 1
+    Page.Visible = isDefault or false
+    Page.ScrollBarThickness = 2
+    Page.ScrollBarImageColor3 = M.LINE_HI
+    Page.CanvasSize = UDim2.new(0, 0, 0, 0)
+    Page.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    Page.ZIndex = 11
+    Page.ScrollingDirection = Enum.ScrollingDirection.Y
+
+    local PageLayout = Instance.new("UIListLayout", Page)
+    PageLayout.Padding = UDim.new(0, 3)
+    PageLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+    local PagePad = Instance.new("UIPadding", Page)
+    PagePad.PaddingTop = UDim.new(0, 6)
+    PagePad.PaddingBottom = UDim.new(0, 6)
+    PagePad.PaddingLeft = UDim.new(0, 6)
+    PagePad.PaddingRight = UDim.new(0, 6)
+
+    -- Click handler
+    TabBtn.MouseButton1Click:Connect(function()
+        for _, p in pairs(TabPages) do p.Visible = false end
+        for _, b in pairs(TabButtons) do
+            b.BackgroundColor3 = M.BG_CARD
+            b.TextColor3 = M.TXT_DIM
+        end
+        Page.Visible = true
+        TabBtn.BackgroundColor3 = M.TXT
+        TabBtn.TextColor3 = M.BG_DEEP
+    end)
+
+    -- Hover effect
+    TabBtn.MouseEnter:Connect(function()
+        if not Page.Visible then
+            TweenService:Create(TabBtn, TweenInfo.new(0.12), {
+                BackgroundColor3 = M.BG_CARD_H,
+                TextColor3 = M.TXT_MID
+            }):Play()
+        end
+    end)
+    TabBtn.MouseLeave:Connect(function()
+        if not Page.Visible then
+            TweenService:Create(TabBtn, TweenInfo.new(0.12), {
+                BackgroundColor3 = M.BG_CARD,
+                TextColor3 = M.TXT_DIM
+            }):Play()
+        end
+    end)
+
+    table.insert(TabButtons, TabBtn)
+    table.insert(TabPages, Page)
+
+    return Page
+end
+
+-- AddToggle: card mini full-width 36px, seluruh card bisa dipencet (gampang dipencet)
+local function AddToggle(page, text, callback)
+    -- Card sebagai TextButton supaya seluruh area bisa dipencet
+    local Card = Instance.new("TextButton", page)
+    Card.Size = UDim2.new(1, -4, 0, 36)
+    Card.BackgroundColor3 = M.BG_CARD
+    Card.BackgroundTransparency = 0
+    Card.Text = ""
+    Card.AutoButtonColor = false
+    Card.BorderSizePixel = 0
+    Card.ZIndex = 11
+    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 5)
+
+    local Label = Instance.new("TextLabel", Card)
+    Label.Size = UDim2.new(1, -48, 1, 0)
+    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Text = text
+    Label.Font = Enum.Font.GothamMedium
+    Label.TextSize = 11
+    Label.TextColor3 = M.TXT_MID
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+    Label.ZIndex = 12
+
+    -- Mini toggle switch (28x16, gampang dilihat)
+    local Switch = Instance.new("Frame", Card)
+    Switch.Size = UDim2.new(0, 28, 0, 16)
+    Switch.Position = UDim2.new(1, -36, 0.5, -8)
+    Switch.BackgroundColor3 = M.BG_INPUT
+    Switch.BorderSizePixel = 0
+    Switch.ZIndex = 12
+    Instance.new("UICorner", Switch).CornerRadius = UDim.new(1, 0)
+
+    local Dot = Instance.new("Frame", Switch)
+    Dot.Size = UDim2.new(0, 12, 0, 12)
+    Dot.Position = UDim2.new(0, 2, 0.5, -6)
+    Dot.BackgroundColor3 = M.TXT_DIM
+    Dot.BorderSizePixel = 0
+    Instance.new("UICorner", Dot).CornerRadius = UDim.new(1, 0)
+    Dot.ZIndex = 13
+
+    local state = false
+    local function doToggle()
+        state = not state
+        TweenService:Create(Dot, TweenInfo.new(0.18), {
+            Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+            BackgroundColor3 = state and M.TXT or M.TXT_DIM
+        }):Play()
+        TweenService:Create(Switch, TweenInfo.new(0.18), {
+            BackgroundColor3 = state and M.TXT or M.BG_INPUT
+        }):Play()
+        TweenService:Create(Card, TweenInfo.new(0.18), {
+            BackgroundColor3 = state and M.BG_CARD_A or M.BG_CARD
+        }):Play()
+        TweenService:Create(Label, TweenInfo.new(0.18), {
+            TextColor3 = state and M.TXT or M.TXT_MID
+        }):Play()
+        callback(state)
+    end
+
+    -- Klik di mana saja di card = toggle
+    Card.MouseButton1Click:Connect(doToggle)
+
+    -- Hover effect
+    Card.MouseEnter:Connect(function()
+        if not state then
+            TweenService:Create(Card, TweenInfo.new(0.1), { BackgroundColor3 = M.BG_CARD_H }):Play()
+        end
+    end)
+    Card.MouseLeave:Connect(function()
+        if not state then
+            TweenService:Create(Card, TweenInfo.new(0.1), { BackgroundColor3 = M.BG_CARD }):Play()
+        end
+    end)
+
+    return Card, Switch, Dot
+end
+
+-- AddButton: action button mini full-width 36px (gampang dipencet)
+local function AddButton(page, text, callback)
+    local Btn = Instance.new("TextButton", page)
+    Btn.Size = UDim2.new(1, -4, 0, 36)
+    Btn.BackgroundColor3 = M.BG_CARD
+    Btn.BackgroundTransparency = 0
+    Btn.Text = text
+    Btn.Font = Enum.Font.GothamMedium
+    Btn.TextSize = 11
+    Btn.TextColor3 = M.TXT_MID
+    Btn.TextXAlignment = Enum.TextXAlignment.Left
+    Btn.AutoButtonColor = false
+    Btn.BorderSizePixel = 0
+    Btn.ZIndex = 11
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 5)
+
+    local PadLeft = Instance.new("UIPadding", Btn)
+    PadLeft.PaddingLeft = UDim.new(0, 10)
+
+    -- Hover & click feedback
+    Btn.MouseEnter:Connect(function()
+        TweenService:Create(Btn, TweenInfo.new(0.1), {
+            BackgroundColor3 = M.BG_CARD_H,
+            TextColor3 = M.TXT
+        }):Play()
+    end)
+    Btn.MouseLeave:Connect(function()
+        TweenService:Create(Btn, TweenInfo.new(0.1), {
+            BackgroundColor3 = M.BG_CARD,
+            TextColor3 = M.TXT_MID
+        }):Play()
+    end)
+    Btn.MouseButton1Click:Connect(function()
+        TweenService:Create(Btn, TweenInfo.new(0.08), {
+            BackgroundColor3 = M.BG_CARD_A,
+            TextColor3 = M.TXT
+        }):Play()
+        task.delay(0.1, function()
+            TweenService:Create(Btn, TweenInfo.new(0.12), {
+                BackgroundColor3 = M.BG_CARD,
+                TextColor3 = M.TXT_MID
+            }):Play()
+        end)
+        callback()
+    end)
+
+    return Btn
+end
+
+-- makeRow: container row untuk custom widgets (full-width 36px default, gampang dipencet)
+local function makeRow(parent, height)
+    local f = Instance.new("Frame", parent)
+    f.Size = UDim2.new(1, -4, 0, height or 36)
+    f.BackgroundColor3 = M.BG_CARD
+    f.BackgroundTransparency = 0
+    f.BorderSizePixel = 0
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
+    return f
+end
+
+-- makeLabel: text label di dalam row
+local function makeLabel(parent, text, xOff, w)
+    local l = Instance.new("TextLabel", parent)
+    l.Size = UDim2.new(0, w or 110, 1, 0)
+    l.Position = UDim2.new(0, xOff or 10, 0, 0)
+    l.Text = text
+    l.Font = Enum.Font.GothamMedium
+    l.TextSize = 11
+    l.TextColor3 = M.TXT_MID
+    l.TextXAlignment = Enum.TextXAlignment.Left
+    l.BackgroundTransparency = 1
+    return l
+end
+
+-- makeSwitch: mini toggle switch (28x16, Switch = TextButton yang clickable)
+local function makeSwitch(parent)
+    local Switch = Instance.new("TextButton", parent)
+    Switch.Size = UDim2.new(0, 28, 0, 16)
+    Switch.Position = UDim2.new(1, -36, 0.5, -8)
+    Switch.BackgroundColor3 = M.BG_INPUT
+    Switch.BorderSizePixel = 0
+    Switch.Text = ""
+    Switch.AutoButtonColor = false
+    Instance.new("UICorner", Switch).CornerRadius = UDim.new(1, 0)
+    local Dot = Instance.new("Frame", Switch)
+    Dot.Size = UDim2.new(0, 12, 0, 12)
+    Dot.Position = UDim2.new(0, 2, 0.5, -6)
+    Dot.BackgroundColor3 = M.TXT_DIM
+    Dot.BorderSizePixel = 0
+    Instance.new("UICorner", Dot).CornerRadius = UDim.new(1, 0)
+    return Switch, Dot
+end
+
+-- animSwitch: animasi toggle (mono style, match switch 28x16)
+local function animSwitch(Switch, Dot, state)
+    TweenService:Create(Dot, TweenInfo.new(0.18), {
+        Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+        BackgroundColor3 = state and M.TXT or M.TXT_DIM
+    }):Play()
+    TweenService:Create(Switch, TweenInfo.new(0.18), {
+        BackgroundColor3 = state and M.TXT or M.BG_INPUT
+    }):Play()
+end
+
+-- makeMwSlider: slider mini mono (untuk Moonwalk)
+local function makeMwSlider(labelText, key, minVal, maxVal, decimals)
+    local row = makeRow(TabMoonwalk, 36)
+    makeLabel(row, labelText, 8, 90)
+
+    local valLbl = Instance.new("TextLabel", row)
+    valLbl.Size = UDim2.new(0, 36, 0, 12)
+    valLbl.Position = UDim2.new(1, -44, 0, 4)
+    valLbl.BackgroundTransparency = 1
+    valLbl.TextColor3 = M.TXT
+    valLbl.TextSize = 9
+    valLbl.Font = Enum.Font.GothamBold
+    valLbl.TextXAlignment = Enum.TextXAlignment.Right
+
+    local trackBg = Instance.new("Frame", row)
+    trackBg.Size = UDim2.new(1, -16, 0, 3)
+    trackBg.Position = UDim2.new(0, 8, 1, -10)
+    trackBg.BackgroundColor3 = M.BG_INPUT
+    trackBg.BorderSizePixel = 0
+    Instance.new("UICorner", trackBg).CornerRadius = UDim.new(0, 2)
+
+    local trackFill = Instance.new("Frame", trackBg)
+    trackFill.Size = UDim2.new(0, 0, 1, 0)
+    trackFill.BackgroundColor3 = M.TXT
+    trackFill.BorderSizePixel = 0
+    Instance.new("UICorner", trackFill).CornerRadius = UDim.new(0, 2)
+
+    local thumb = Instance.new("Frame", trackBg)
+    thumb.Size = UDim2.new(0, 8, 0, 8)
+    thumb.AnchorPoint = Vector2.new(0.5, 0.5)
+    thumb.BackgroundColor3 = M.TXT
+    thumb.BorderSizePixel = 0
+    Instance.new("UICorner", thumb).CornerRadius = UDim.new(1, 0)
+
+    local function updateSlider(val)
+        val = math.clamp(val, minVal, maxVal)
+        local t = (val - minVal) / (maxVal - minVal)
+        trackFill.Size = UDim2.new(t, 0, 1, 0)
+        thumb.Position = UDim2.new(t, 0, 0.5, 0)
+        valLbl.Text = string.format(decimals > 0 and ("%." .. decimals .. "f") or "%d", val)
+        MwCfg[key] = val
+    end
+    updateSlider(MwCfg[key])
+
+    local draggingSlider = false
+    trackBg.InputBegan:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 or inp.UserInputType == Enum.UserInputType.Touch then
+            draggingSlider = true
+            local rel = inp.Position.X - trackBg.AbsolutePosition.X
+            updateSlider(minVal + (maxVal - minVal) * math.clamp(rel / trackBg.AbsoluteSize.X, 0, 1))
+        end
+    end)
+    UserInputService.InputChanged:Connect(function(inp)
+        if not draggingSlider then return end
+        if inp.UserInputType == Enum.UserInputType.MouseMovement or inp.UserInputType == Enum.UserInputType.Touch then
+            local rel = inp.Position.X - trackBg.AbsolutePosition.X
+            updateSlider(minVal + (maxVal - minVal) * math.clamp(rel / trackBg.AbsoluteSize.X, 0, 1))
+        end
+    end)
+    UserInputService.InputEnded:Connect(function(inp)
+        if inp.UserInputType == Enum.UserInputType.MouseButton1 or inp.UserInputType == Enum.UserInputType.Touch then
+            draggingSlider = false
+        end
+    end)
 end
 
 -- ============================================================
--- CREATE TABS (10 tabs)
+-- MINIMIZE FAB (compatibility dengan kode asli)
 -- ============================================================
-local TabInfo    = CreateTab("Info",    true,  THEME.INFO)
-local TabMain    = CreateTab("Main",    false, THEME.MAIN)
-local TabEsp     = CreateTab("ESP",     false, THEME.ESP)
-local TabMisc    = CreateTab("Misc",    false, THEME.MISC)
-local TabSpeed   = CreateTab("Speed",   false, THEME.SPEED)
-local TabCombat  = CreateTab("Combat",  false, THEME.COMBAT)
-local TabKiller  = CreateTab("Killer",  false, THEME.KILLER)
-local TabParry   = CreateTab("Parry",   false, THEME.PARRY)
-local TabMoonwalk= CreateTab("Moonwalk",false, THEME.MOONWALK)
-local TabVeil    = CreateTab("Veil",    false, THEME.VEIL)
+UI.MinBtn = UI.FloatingBtn  -- alias, biar kode asli gak error
 
 -- ============================================================
--- INFO PAGE
+-- CREATE TABS (9 tabs)
 -- ============================================================
-do
-    TabInfo:AddParagraph({
-        Title = "AiiSigma V1.0",
-        Content = "All-in-One Script Hub dengan 9 modul fitur lengkap untuk Roblox. Dirancang ringan, cepat, dan mudah dipakai. Mendukung platform PC & Mobile dengan UI elegan dan responsif."
-    })
+local TabMain    = CreateTab("Main",    true)
+local TabEsp     = CreateTab("ESP")
+local TabMisc    = CreateTab("Misc")
+local TabSpeed   = CreateTab("Speed")
+local TabCombat  = CreateTab("Combat")
+local TabKiller  = CreateTab("Killer")
+local TabParry   = CreateTab("Parry")
+local TabMoonwalk= CreateTab("Moonwalk")
+local TabVeil    = CreateTab("Veil")
 
-    TabInfo:AddSection({ Title = "Statistics" })
-    TabInfo:AddParagraph({ Title = "Modules", Content = "9" })
-    TabInfo:AddParagraph({ Title = "Features", Content = "50+" })
-    TabInfo:AddParagraph({ Title = "Version", Content = "V1.0" })
-    TabInfo:AddParagraph({ Title = "Platform", Content = "PC & Mobile" })
-
-    TabInfo:AddSection({ Title = "Creator" })
-    TabInfo:AddParagraph({ Title = "AiiSigma", Content = "Developer & Designer\nStatus: Verified ✓" })
-
-    TabInfo:AddSection({ Title = "Credits" })
-    TabInfo:AddParagraph({ Title = "Script", Content = "AiiSigma" })
-    TabInfo:AddParagraph({ Title = "UI/UX", Content = "AiiSigma" })
-    TabInfo:AddParagraph({ Title = "Testing", Content = "Community" })
-    TabInfo:AddParagraph({ Title = "Released", Content = "2025" })
-
-    TabInfo:AddParagraph({
-        Title = "",
-        Content = "Thank you for using AiiSigma 💜"
-    })
-end
-
--- ============================================================
--- END OF UI CREATION — Feature calls continue below
--- ============================================================
+-- Tampilkan main panel saat start
+UI.MainFrame.Visible = true
 
 local function getHrp() return LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") end
 local function getHum() return LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") end
@@ -1541,10 +1863,50 @@ AddToggle(TabMain, "Fast Animations", function(v)
     Extras.fastAnimEnabled = v
 end)
 
-AddInput(TabMain, "Fast Animations Speed", tostring(Extras.fastAnimSpeed), "2-10", true, function(val)
-    local v = tonumber(val)
-    if v then
-        Extras.fastAnimSpeed = math.clamp(v, 2, 10)
+local faSpeedFrame = Instance.new("Frame", TabMain)
+faSpeedFrame.Size = UDim2.new(1, -8, 0, 34)
+faSpeedFrame.BackgroundColor3 = COLORS.THEME_DARKER
+faSpeedFrame.BackgroundTransparency = 0.2
+Instance.new("UICorner", faSpeedFrame).CornerRadius = UDim.new(0, 6)
+local faSpeedStroke = Instance.new("UIStroke", faSpeedFrame)
+faSpeedStroke.Color = COLORS.THEME
+faSpeedStroke.Thickness = 1
+faSpeedStroke.Transparency = 0.7
+
+local faSpeedLabel = Instance.new("TextLabel", faSpeedFrame)
+faSpeedLabel.Size = UDim2.new(1, -90, 1, 0)
+faSpeedLabel.Position = UDim2.new(0, 10, 0, 0)
+faSpeedLabel.Text = "Fast Animations Speed"
+faSpeedLabel.Font = Enum.Font.Gotham
+faSpeedLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+faSpeedLabel.TextSize = 11
+faSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+faSpeedLabel.BackgroundTransparency = 1
+
+local faSpeedBox = Instance.new("TextBox", faSpeedFrame)
+faSpeedBox.Size = UDim2.new(0, 50, 0, 22)
+faSpeedBox.Position = UDim2.new(1, -58, 0.5, -11)
+faSpeedBox.BackgroundColor3 = COLORS.THEME_DARK
+faSpeedBox.Text = tostring(Extras.fastAnimSpeed)
+faSpeedBox.Font = Enum.Font.GothamSemibold
+faSpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+faSpeedBox.TextSize = 11
+faSpeedBox.PlaceholderText = "2-10"
+faSpeedBox.ClearTextOnFocus = false
+Instance.new("UICorner", faSpeedBox).CornerRadius = UDim.new(0, 5)
+local faBoxStroke = Instance.new("UIStroke", faSpeedBox)
+faBoxStroke.Color = COLORS.THEME
+faBoxStroke.Thickness = 1
+faBoxStroke.Transparency = 0.4
+
+faSpeedBox.FocusLost:Connect(function()
+    local val = tonumber(faSpeedBox.Text)
+    if val then
+        val = math.clamp(val, 2, 10)
+        Extras.fastAnimSpeed = val
+        faSpeedBox.Text = tostring(val)
+    else
+        faSpeedBox.Text = tostring(Extras.fastAnimSpeed)
     end
 end)
 
@@ -1822,54 +2184,112 @@ AddToggle(TabMisc, "Instant Heal (Self)", function(v)
         end
 end)
 
--- Heal Others: pakai Fluent Dropdown untuk pilih player
-local healOthersDropdown = AddDropdown(TabMisc, "Instant Heal Others (Select Player)", {}, "OFF", function(selected)
-    if selected == "OFF" then
-        States.InstantHealOthers = false
-        Connections.selectedHealTarget = nil
-        if Connections.healOthersConnection then Connections.healOthersConnection:Disconnect(); Connections.healOthersConnection = nil end
-    else
-        local target = Players:FindFirstChild(selected)
-        if target then
-            Connections.selectedHealTarget = target
-            States.InstantHealOthers = true
-            if Connections.healOthersConnection then Connections.healOthersConnection:Disconnect() end
-            local skillCheckTimer = 0
-            local healTrueTimer = 0
-            local healFalseTimer = 0
-            local healTrueActive = false
-            Connections.healOthersConnection = RunService.Heartbeat:Connect(function(dt)
-                if not States.InstantHealOthers or not Connections.selectedHealTarget then return end
-                local targetChar = Connections.selectedHealTarget.Character
-                local targetHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
-                if not targetHum or targetHum.Health >= targetHum.MaxHealth * 0.9 then return end
-                skillCheckTimer = skillCheckTimer + dt
-                if skillCheckTimer >= 0.05 then skillCheckTimer = 0; doOthersHealSkillCheck(Connections.selectedHealTarget) end
-                healTrueTimer = healTrueTimer + dt
-                if healTrueTimer >= 0.09 and not healTrueActive then
-                    healTrueTimer = 0; healTrueActive = true; doOthersHealTrue(Connections.selectedHealTarget)
-                end
-                healFalseTimer = healFalseTimer + dt
-                if healFalseTimer >= 0.07 and healTrueActive then
-                    healFalseTimer = 0; healTrueActive = false; doOthersHealFalse(Connections.selectedHealTarget); healTrueTimer = -0.10
-                end
-            end)
-        end
-    end
-end)
+local healOthersFrame = Instance.new("Frame", TabMisc)
+healOthersFrame.Size = UDim2.new(1, -8, 0, 34)
+healOthersFrame.BackgroundTransparency = 1
 
--- Update dropdown dengan daftar player
-task.spawn(function()
-    while true do
-        task.wait(2)
-        local players = { "OFF" }
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= LocalPlayer then table.insert(players, player.Name) end
+local healOthersToggleBtn = Instance.new("TextButton", healOthersFrame)
+healOthersToggleBtn.Size = UDim2.new(1, 0, 0, 34)
+healOthersToggleBtn.BackgroundColor3 = COLORS.THEME_BTN
+healOthersToggleBtn.BackgroundTransparency = 0.2
+healOthersToggleBtn.Text = "Instant Heal Others: OFF"
+healOthersToggleBtn.TextColor3 = Color3.fromRGB(190, 192, 200)
+healOthersToggleBtn.Font = Enum.Font.Gotham
+healOthersToggleBtn.TextSize = 11
+healOthersToggleBtn.TextXAlignment = Enum.TextXAlignment.Left
+Instance.new("UICorner", healOthersToggleBtn).CornerRadius = UDim.new(0, 6)
+local healBtnStroke = Instance.new("UIStroke", healOthersToggleBtn)
+healBtnStroke.Color = COLORS.THEME
+healBtnStroke.Thickness = 1
+healBtnStroke.Transparency = 0.5
+local healOthersPadding = Instance.new("UIPadding", healOthersToggleBtn)
+healOthersPadding.PaddingLeft = UDim.new(0, 10)
+
+local playerListFrame = Instance.new("ScrollingFrame", TabMisc)
+playerListFrame.Size = UDim2.new(1, -8, 0, 0)
+playerListFrame.BackgroundColor3 = COLORS.THEME_DARKER
+playerListFrame.BackgroundTransparency = 0.1
+playerListFrame.Visible = false
+playerListFrame.ScrollBarThickness = 2
+playerListFrame.ScrollBarImageColor3 = COLORS.THEME
+playerListFrame.ZIndex = 10
+Instance.new("UICorner", playerListFrame).CornerRadius = UDim.new(0, 6)
+local playerListStroke = Instance.new("UIStroke", playerListFrame)
+playerListStroke.Color = COLORS.THEME
+playerListStroke.Thickness = 1
+playerListStroke.Transparency = 0.5
+local playerListLayout = Instance.new("UIListLayout", playerListFrame)
+playerListLayout.Padding = UDim.new(0, 2)
+
+local function updatePlayerList()
+        for _, child in ipairs(playerListFrame:GetChildren()) do
+                if child:IsA("TextButton") then child:Destroy() end
         end
-        pcall(function()
-            healOthersDropdown:SetValues(players)
-        end)
-    end
+        local players = {}
+        for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer then table.insert(players, player.Name) end
+        end
+        playerListFrame.CanvasSize = UDim2.new(0, 0, 0, #players * 30)
+        for i, playerName in ipairs(players) do
+                local playerBtn = Instance.new("TextButton", playerListFrame)
+                playerBtn.Size = UDim2.new(1, -4, 0, 28)
+                playerBtn.Position = UDim2.new(0, 2, 0, (i - 1) * 30)
+                playerBtn.BackgroundColor3 = COLORS.THEME_DARK
+                playerBtn.BackgroundTransparency = 0.2
+                playerBtn.Text = playerName
+                playerBtn.TextColor3 = Color3.fromRGB(190, 192, 200)
+                playerBtn.Font = Enum.Font.Gotham
+                playerBtn.TextSize = 11
+                playerBtn.ZIndex = 10
+                Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0, 4)
+                playerBtn.MouseButton1Click:Connect(function()
+                        local target = Players:FindFirstChild(playerName)
+                        if target then
+                                Connections.selectedHealTarget = target
+                                healOthersToggleBtn.Text = "Healing: " .. playerName .. " [ON]"
+                                healOthersToggleBtn.TextColor3 = Color3.fromRGB(200, 255, 200)
+                                playerListFrame.Visible = false
+                                States.InstantHealOthers = true
+                                if Connections.healOthersConnection then Connections.healOthersConnection:Disconnect() end
+                                local skillCheckTimer = 0
+                                local healTrueTimer = 0
+                                local healFalseTimer = 0
+                                local healTrueActive = false
+                                Connections.healOthersConnection = RunService.Heartbeat:Connect(function(dt)
+                                        if not States.InstantHealOthers or not Connections.selectedHealTarget then return end
+                                        local targetChar = Connections.selectedHealTarget.Character
+                                        local targetHum = targetChar and targetChar:FindFirstChildOfClass("Humanoid")
+                                        if not targetHum or targetHum.Health >= targetHum.MaxHealth * 0.9 then return end
+                                        skillCheckTimer = skillCheckTimer + dt
+                                        if skillCheckTimer >= 0.05 then skillCheckTimer = 0; doOthersHealSkillCheck(Connections.selectedHealTarget) end
+                                        healTrueTimer = healTrueTimer + dt
+                                        if healTrueTimer >= 0.09 and not healTrueActive then
+                                                healTrueTimer = 0; healTrueActive = true; doOthersHealTrue(Connections.selectedHealTarget)
+                                        end
+                                        healFalseTimer = healFalseTimer + dt
+                                        if healFalseTimer >= 0.07 and healTrueActive then
+                                                healFalseTimer = 0; healTrueActive = false; doOthersHealFalse(Connections.selectedHealTarget); healTrueTimer = -0.10
+                                        end
+                                end)
+                        end
+                end)
+        end
+end
+
+healOthersToggleBtn.MouseButton1Click:Connect(function()
+        if States.InstantHealOthers then
+                States.InstantHealOthers = false
+                Connections.selectedHealTarget = nil
+                healOthersToggleBtn.Text = "Instant Heal Others: OFF"
+                healOthersToggleBtn.TextColor3 = Color3.fromRGB(190, 192, 200)
+                playerListFrame.Visible = false
+                playerListFrame.Size = UDim2.new(1, -8, 0, 0)
+                if Connections.healOthersConnection then Connections.healOthersConnection:Disconnect(); Connections.healOthersConnection = nil end
+        else
+                updatePlayerList()
+                playerListFrame.Visible = true
+                playerListFrame.Size = UDim2.new(1, -8, 0, math.min(#Players:GetPlayers() * 30, 150))
+        end
 end)
 
 AddToggle(TabMisc, "Auto Heal All heh)", function(v)
@@ -1907,14 +2327,82 @@ AddToggle(TabMisc, "Auto Heal All heh)", function(v)
         end
 end)
 
-do -- Gen Fast Bypass toggle (Fluent: Keybind + Toggle)
-    AddKeybind(TabMisc, "Gen Fast Bypass Key", Enum.KeyCode.G, function(key)
-        GenBypass.HotkeyCode = key
+do -- Gen Fast Bypass toggle
+    local gbFrame = Instance.new("Frame", TabMisc)
+    gbFrame.Size = UDim2.new(1, -8, 0, 34)
+    gbFrame.BackgroundColor3 = COLORS.THEME_DARKER
+    gbFrame.BackgroundTransparency = 0.2
+    Instance.new("UICorner", gbFrame).CornerRadius = UDim.new(0, 6)
+    local gbStroke = Instance.new("UIStroke", gbFrame)
+    gbStroke.Color = COLORS.THEME; gbStroke.Thickness = 1; gbStroke.Transparency = 0.7
+
+    local gbLabel = Instance.new("TextLabel", gbFrame)
+    gbLabel.Size = UDim2.new(0, 120, 1, 0)
+    gbLabel.Position = UDim2.new(0, 10, 0, 0)
+    gbLabel.Text = "Gen Fast Bypass"
+    gbLabel.Font = Enum.Font.Gotham
+    gbLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+    gbLabel.TextSize = 11
+    gbLabel.TextXAlignment = Enum.TextXAlignment.Left
+    gbLabel.BackgroundTransparency = 1
+
+    local gbKeyBtn = Instance.new("TextButton", gbFrame)
+    gbKeyBtn.Size = UDim2.new(0, 36, 0, 20)
+    gbKeyBtn.Position = UDim2.new(1, -86, 0.5, -10)
+    gbKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
+    gbKeyBtn.Text = "G"
+    gbKeyBtn.Font = Enum.Font.GothamSemibold
+    gbKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+    gbKeyBtn.TextSize = 10
+    gbKeyBtn.Visible = not IsMobile
+    Instance.new("UICorner", gbKeyBtn).CornerRadius = UDim.new(0, 4)
+    local gbKeyStroke = Instance.new("UIStroke", gbKeyBtn)
+    gbKeyStroke.Color = COLORS.THEME; gbKeyStroke.Thickness = 1; gbKeyStroke.Transparency = 0.4
+
+    local gbListening = false
+    gbKeyBtn.MouseButton1Click:Connect(function()
+        if IsMobile then return end
+        gbListening = true
+        gbKeyBtn.Text = "..."
+        gbKeyBtn.TextColor3 = Color3.fromRGB(255, 220, 100)
+        local conn
+        conn = UserInputService.InputBegan:Connect(function(input, gp)
+            if gp then return end
+            if input.UserInputType == Enum.UserInputType.Keyboard then
+                GenBypass.HotkeyCode = input.KeyCode
+                gbKeyBtn.Text = tostring(input.KeyCode.Name)
+                gbKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+                gbListening = false
+                conn:Disconnect()
+            end
+        end)
     end)
 
-    AddToggle(TabMisc, "Gen Fast Bypass", function(v)
-        GenBypass.Enabled = v
+    local gbSwitch = Instance.new("TextButton", gbFrame)
+    gbSwitch.Size = UDim2.new(0, 28, 0, 16)
+    gbSwitch.Position = UDim2.new(1, -36, 0.5, -8)
+    gbSwitch.BackgroundColor3 = Color3.fromRGB(10, 11, 14)
+    gbSwitch.Text = ""
+    gbSwitch.AutoButtonColor = false
+    Instance.new("UICorner", gbSwitch).CornerRadius = UDim.new(1, 0)
+    local gbDot = Instance.new("Frame", gbSwitch)
+    gbDot.Size = UDim2.new(0, 12, 0, 12)
+    gbDot.Position = UDim2.new(0, 2, 0.5, -6)
+    gbDot.BackgroundColor3 = Color3.fromRGB(130, 132, 142)
+    Instance.new("UICorner", gbDot).CornerRadius = UDim.new(1, 0)
+
+    local gbState = false
+    gbSwitch.MouseButton1Click:Connect(function()
+        gbState = not gbState
+        GenBypass.Enabled = gbState
         GB_UpdateButton()
+        TweenService:Create(gbDot, TweenInfo.new(0.18), {
+            Position = gbState and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+            BackgroundColor3 = gbState and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 132, 142)
+        }):Play()
+        TweenService:Create(gbSwitch, TweenInfo.new(0.18), {
+            BackgroundColor3 = gbState and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(10, 11, 14)
+        }):Play()
     end)
 end -- fim Gen Fast Bypass toggle
 
@@ -1991,10 +2479,28 @@ AddButton(TabSpeed, "Speed keybind (R)", function()
         end)
 end)
 
-AddInput(TabSpeed, "NoSlowdown Speed", tostring(Extras.CustomSpeed), "1-100", true, function(val)
-    local v = tonumber(val)
-    if v and v > 0 and v <= 100 then
-        Extras.CustomSpeed = v
+local speedRow = makeRow(TabSpeed, 34)
+local speedLabel = makeLabel(speedRow, "NoSlowdown Speed", 10, 140)
+
+local speedBox = Instance.new("TextBox", speedRow)
+speedBox.Size = UDim2.new(0, 50, 0, 22)
+speedBox.Position = UDim2.new(1, -58, 0.5, -11)
+speedBox.BackgroundColor3 = COLORS.THEME_DARK
+speedBox.Text = tostring(Extras.CustomSpeed)
+speedBox.Font = Enum.Font.GothamSemibold
+speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+speedBox.TextSize = 11
+speedBox.ClearTextOnFocus = false
+Instance.new("UICorner", speedBox).CornerRadius = UDim.new(0, 5)
+local speedBoxStroke = Instance.new("UIStroke", speedBox)
+speedBoxStroke.Color = COLORS.THEME; speedBoxStroke.Thickness = 1; speedBoxStroke.Transparency = 0.4
+
+speedBox.FocusLost:Connect(function()
+    local val = tonumber(speedBox.Text)
+    if val and val > 0 and val <= 100 then
+        Extras.CustomSpeed = val
+    else
+        speedBox.Text = tostring(Extras.CustomSpeed)
     end
 end)
 
@@ -2002,24 +2508,204 @@ AddToggle(TabSpeed, "NoSlowdown", function(v)
     Extras.NoSlowdown = v
 end)
 
--- Main: FOV Changer (toggle + input)
-AddInput(TabMain, "FOV Value", tostring(Extras.fovValue), "50-150", true, function(val)
-    local v = tonumber(val)
-    if v then
-        Extras.fovValue = math.clamp(math.floor(v), 50, 150)
+local fovFrame = makeRow(TabMain, 34)
+local fovLabel = makeLabel(fovFrame, "FOV Changer", 10, 120)
+local fovSwitch, fovDot = makeSwitch(fovFrame)
+
+local fovBox = Instance.new("TextBox", fovFrame)
+fovBox.Size = UDim2.new(0, 50, 0, 22)
+fovBox.Position = UDim2.new(1, -98, 0.5, -11)
+fovBox.BackgroundColor3 = COLORS.THEME_DARK
+fovBox.Text = tostring(Extras.fovValue)
+fovBox.Font = Enum.Font.GothamSemibold
+fovBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+fovBox.TextSize = 11
+fovBox.PlaceholderText = "50-150"
+fovBox.ClearTextOnFocus = false
+Instance.new("UICorner", fovBox).CornerRadius = UDim.new(0, 5)
+local fovBoxStroke = Instance.new("UIStroke", fovBox)
+fovBoxStroke.Color = COLORS.THEME; fovBoxStroke.Thickness = 1; fovBoxStroke.Transparency = 0.4
+
+fovBox.FocusLost:Connect(function()
+    local val = tonumber(fovBox.Text)
+    if val then
+        val = math.clamp(math.floor(val), 50, 150)
+        Extras.fovValue = val
+        fovBox.Text = tostring(val)
+    else
+        fovBox.Text = tostring(Extras.fovValue)
     end
 end)
 
-AddToggle(TabMain, "FOV Changer", function(v)
-    Extras.fovEnabled = v
-    if not v and workspace.CurrentCamera then
+fovSwitch.MouseButton1Click:Connect(function()
+    Extras.fovEnabled = not Extras.fovEnabled
+    animSwitch(fovSwitch, fovDot, Extras.fovEnabled)
+    if not Extras.fovEnabled and workspace.CurrentCamera then
         workspace.CurrentCamera.FieldOfView = 70
     end
 end)
 
--- ============================================================
--- COMBAT HELPER FUNCTIONS
--- ============================================================
+local silentAimRow = makeRow(TabCombat, 34)
+local silentAimLabel = makeLabel(silentAimRow, "Silent Aim [H]", 10, 140)
+local silentSwitch, silentDot = makeSwitch(silentAimRow)
+
+local silentKeyBtn = Instance.new("TextButton", silentAimRow)
+silentKeyBtn.Size = UDim2.new(0, 28, 0, 20)
+silentKeyBtn.Position = UDim2.new(1, -78, 0.5, -10)
+silentKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
+silentKeyBtn.BackgroundTransparency = 0.2
+silentKeyBtn.Text = "H"
+silentKeyBtn.Font = Enum.Font.GothamBold
+silentKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+silentKeyBtn.TextSize = 10
+Instance.new("UICorner", silentKeyBtn).CornerRadius = UDim.new(0, 4)
+local skStroke = Instance.new("UIStroke", silentKeyBtn)
+skStroke.Color = COLORS.THEME
+skStroke.Thickness = 1
+skStroke.Transparency = 0.5
+
+silentKeyBtn.MouseButton1Click:Connect(function()
+        if listeningForSilentKey then return end
+        listeningForSilentKey = true
+        silentKeyBtn.Text = "..."
+        silentKeyBtn.TextColor3 = Color3.fromRGB(255, 220, 80)
+        local conn
+        conn = UserInputService.InputBegan:Connect(function(input, gp)
+                if gp then return end
+                if input.UserInputType == Enum.UserInputType.Keyboard then
+                        SilentAimKey = input.KeyCode
+                        local kname = keyCodeName(input.KeyCode)
+                        silentKeyBtn.Text = kname
+                        silentKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+                        silentAimLabel.Text = "Silent Aim [" .. kname .. "]"
+                        listeningForSilentKey = false
+                        conn:Disconnect()
+                end
+        end)
+end)
+
+local fovRow = makeRow(TabCombat, 34)
+local fovLabel = makeLabel(fovRow, "FOV (px):", 10, 90)
+local fovBox = Instance.new("TextBox", fovRow)
+fovBox.Size = UDim2.new(0, 70, 0, 22)
+fovBox.Position = UDim2.new(1, -80, 0.5, -11)
+fovBox.BackgroundColor3 = COLORS.THEME_DARK
+fovBox.BackgroundTransparency = 0.1
+fovBox.Text = tostring(FOV_RADIUS)
+fovBox.Font = Enum.Font.Gotham
+fovBox.TextColor3 = Color3.fromRGB(190, 192, 200)
+fovBox.TextSize = 11
+fovBox.ClearTextOnFocus = false
+Instance.new("UICorner", fovBox).CornerRadius = UDim.new(0, 4)
+local fboxStroke = Instance.new("UIStroke", fovBox)
+fboxStroke.Color = COLORS.THEME
+fboxStroke.Thickness = 1
+fboxStroke.Transparency = 0.5
+
+fovBox.FocusLost:Connect(function()
+        local val = tonumber(fovBox.Text)
+        if val and val > 0 then
+                FOV_RADIUS = val
+                fovCircle.Radius = FOV_RADIUS
+        else
+                fovBox.Text = tostring(FOV_RADIUS)
+        end
+end)
+
+local targetHeaderRow = makeRow(TabCombat, 22)
+targetHeaderRow.BackgroundTransparency = 1
+local targetHeaderRow_s = targetHeaderRow:FindFirstChildOfClass("UIStroke")
+if targetHeaderRow_s then targetHeaderRow_s:Destroy() end
+local targetHeader = makeLabel(targetHeaderRow, "Target Selection", 10, 160)
+targetHeader.TextColor3 = Color3.fromRGB(160, 130, 180)
+targetHeader.TextSize = 10
+targetHeader.Font = Enum.Font.GothamSemibold
+
+local targetRow = makeRow(TabCombat, 36)
+local targetLayout = Instance.new("UIListLayout", targetRow)
+targetLayout.FillDirection = Enum.FillDirection.Horizontal
+targetLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+targetLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+targetLayout.Padding = UDim.new(0, 6)
+
+local targetModes = {"All", "Survivor", "Killer"}
+local targetBtns = {}
+
+for _, mode in ipairs(targetModes) do
+        local btn = Instance.new("TextButton", targetRow)
+        btn.Size = UDim2.new(0, 74, 0, 24)
+        btn.BackgroundColor3 = mode == SilentTargetMode and COLORS.THEME or COLORS.THEME_DARK
+        btn.BackgroundTransparency = mode == SilentTargetMode and 0.1 or 0.4
+        btn.Text = mode
+        btn.Font = Enum.Font.GothamSemibold
+        btn.TextColor3 = mode == SilentTargetMode and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 132, 142)
+        btn.TextSize = 10
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
+        if mode == SilentTargetMode then
+                local s = Instance.new("UIStroke", btn)
+                s.Color = COLORS.THEME
+                s.Thickness = 1
+                s.Transparency = 0.3
+        end
+        targetBtns[mode] = btn
+        btn.MouseButton1Click:Connect(function()
+                SilentTargetMode = mode
+                for _, m in ipairs(targetModes) do
+                        local b = targetBtns[m]
+                        b.BackgroundColor3 = m == mode and COLORS.THEME or COLORS.THEME_DARK
+                        b.BackgroundTransparency = m == mode and 0.1 or 0.4
+                        b.TextColor3 = m == mode and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 132, 142)
+                        local es = b:FindFirstChildOfClass("UIStroke")
+                        if es then es:Destroy() end
+                        if m == mode then
+                                local ns = Instance.new("UIStroke", b)
+                                ns.Color = COLORS.THEME
+                                ns.Thickness = 1
+                                ns.Transparency = 0.3
+                        end
+                end
+        end)
+end
+
+local shootRow = makeRow(TabCombat, 34)
+local shootLabel = makeLabel(shootRow, "Shoot Toggle", 10, 140)
+local shootSwitch, shootDot = makeSwitch(shootRow)
+
+local shootKeyBtn = Instance.new("TextButton", shootRow)
+shootKeyBtn.Size = UDim2.new(0, 32, 0, 20)
+shootKeyBtn.Position = UDim2.new(1, -78, 0.5, -10)
+shootKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
+shootKeyBtn.BackgroundTransparency = 0.2
+shootKeyBtn.Text = "---"
+shootKeyBtn.Font = Enum.Font.GothamBold
+shootKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+shootKeyBtn.TextSize = 10
+Instance.new("UICorner", shootKeyBtn).CornerRadius = UDim.new(0, 4)
+local shkStroke = Instance.new("UIStroke", shootKeyBtn)
+shkStroke.Color = COLORS.THEME
+shkStroke.Thickness = 1
+shkStroke.Transparency = 0.5
+
+shootKeyBtn.MouseButton1Click:Connect(function()
+        if listeningForShootKey then return end
+        listeningForShootKey = true
+        shootKeyBtn.Text = "..."
+        shootKeyBtn.TextColor3 = Color3.fromRGB(255, 220, 80)
+        local conn
+        conn = UserInputService.InputBegan:Connect(function(input, gp)
+                if gp then return end
+                if input.UserInputType == Enum.UserInputType.Keyboard then
+                        ShootToggleKey = input.KeyCode
+                        local kname = keyCodeName(input.KeyCode)
+                        shootKeyBtn.Text = kname
+                        shootKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+                        shootLabel.Text = "Shoot Toggle [" .. kname .. "]"
+                        listeningForShootKey = false
+                        conn:Disconnect()
+                end
+        end)
+end)
+
 local function getRealVelocity(hrp, playerName)
         if not hrp then return Vector3.zero end
         local currentPos = hrp.Position
@@ -2162,57 +2848,37 @@ local function doSilentAimFire()
         end
 end
 
--- ============================================================
--- COMBAT TAB
--- ============================================================
-AddKeybind(TabCombat, "Silent Aim Key", Enum.KeyCode.H, function(key)
-    SilentAimKey = key
+silentSwitch.MouseButton1Click:Connect(function()
+        SilentAimEnabled = not SilentAimEnabled
+        animSwitch(silentSwitch, silentDot, SilentAimEnabled)
+        fovCircle.Visible = SilentAimEnabled
+MobileShootBtn.Visible = SilentAimEnabled and MobileShootEnabled
+        if not SilentAimEnabled then
+                currentTarget = nil
+                velocityCache = {}
+        end
 end)
 
-AddToggle(TabCombat, "Silent Aim", function(v)
-    SilentAimEnabled = v
-    fovCircle.Visible = v
-    if MobileShootBtn then
-        MobileShootBtn.Visible = v and MobileShootEnabled
-    end
-    if not v then
-        currentTarget = nil
-        velocityCache = {}
-    end
+shootSwitch.MouseButton1Click:Connect(function()
+        ShootToggleEnabled = not ShootToggleEnabled
+        animSwitch(shootSwitch, shootDot, ShootToggleEnabled)
 end)
 
-AddInput(TabCombat, "FOV (px)", tostring(FOV_RADIUS), "", true, function(val)
-    local v = tonumber(val)
-    if v and v > 0 then
-        FOV_RADIUS = v
-        fovCircle.Radius = FOV_RADIUS
-    end
-end)
+local mobileShootRow = makeRow(TabCombat, 34)
+local mobileShootLabel = makeLabel(mobileShootRow, "Mobile Shoot Button", 10, 160)
+local mobileShootSwitch, mobileShootDot = makeSwitch(mobileShootRow)
 
-AddDropdown(TabCombat, "Target Selection", {"All", "Survivor", "Killer"}, SilentTargetMode, function(selected)
-    SilentTargetMode = selected
-end)
-
-AddKeybind(TabCombat, "Shoot Toggle Key", Enum.KeyCode.Unknown, function(key)
-    ShootToggleKey = key
-end)
-
-AddToggle(TabCombat, "Shoot Toggle", function(v)
-    ShootToggleEnabled = v
-end)
-
--- Mobile Shoot Button (custom, tetap pakai ImageButton karena floating)
 local MobileShootBtn = Instance.new("ImageButton", AiiSigma)
 MobileShootBtn.Size = UDim2.new(0, 70, 0, 70)
 MobileShootBtn.Position = UDim2.new(0.85, 0, 0.75, 0)
-MobileShootBtn.BackgroundColor3 = Color3.fromRGB(30, 15, 40)
+MobileShootBtn.BackgroundColor3 = COLORS.THEME_DARKER
 MobileShootBtn.BackgroundTransparency = 0.1
 MobileShootBtn.Image = ""
 MobileShootBtn.Visible = false
 MobileShootBtn.ZIndex = 10
 Instance.new("UICorner", MobileShootBtn).CornerRadius = UDim.new(1, 0)
 local msBtnStroke = Instance.new("UIStroke", MobileShootBtn)
-msBtnStroke.Color = Color3.fromRGB(98, 63, 117)
+msBtnStroke.Color = COLORS.THEME
 msBtnStroke.Thickness = 2
 msBtnStroke.Transparency = 0.2
 
@@ -2251,13 +2917,19 @@ MobileShootBtn.MouseButton1Click:Connect(function()
         doSilentAimFire()
 end)
 
-AddToggle(TabCombat, "Mobile Shoot Button", function(v)
-    MobileShootEnabled = v
-    MobileShootBtn.Visible = v and SilentAimEnabled
+mobileShootSwitch.MouseButton1Click:Connect(function()
+        MobileShootEnabled = not MobileShootEnabled
+        animSwitch(mobileShootSwitch, mobileShootDot, MobileShootEnabled)
+        MobileShootBtn.Visible = MobileShootEnabled and SilentAimEnabled
 end)
 
-AddToggle(TabCombat, "Lock Mobile Toggle", function(v)
-    MobileShootLocked = v
+local lockMobileRow = makeRow(TabCombat, 34)
+local lockMobileLabel = makeLabel(lockMobileRow, "Lock Mobile Toggle", 10, 160)
+local lockMobileSwitch, lockMobileDot = makeSwitch(lockMobileRow)
+
+lockMobileSwitch.MouseButton1Click:Connect(function()
+        MobileShootLocked = not MobileShootLocked
+        animSwitch(lockMobileSwitch, lockMobileDot, MobileShootLocked)
 end)
 
 RunService.Heartbeat:Connect(function()
@@ -2279,9 +2951,11 @@ end)
 
 UserInputService.InputBegan:Connect(function(input, gp)
         if gp then return end
+        if listeningForSilentKey or listeningForShootKey then return end
         if input.UserInputType == Enum.UserInputType.Keyboard then
                 if input.KeyCode == SilentAimKey then
                         SilentAimEnabled = not SilentAimEnabled
+                        animSwitch(silentSwitch, silentDot, SilentAimEnabled)
                         fovCircle.Visible = SilentAimEnabled
                         MobileShootBtn.Visible = SilentAimEnabled and MobileShootEnabled
                         if not SilentAimEnabled then
@@ -2710,39 +3384,134 @@ end)
         end
     end)
 
-    AddInput(TabParry, "Range (studs)", tostring(PARRY_MAX_DISTANCE), "1-60", true, function(val)
-        local v = tonumber(val)
-        if v and v > 0 then
-            PARRY_MAX_DISTANCE = math.clamp(v, 1, 60)
+    local rangeRow = makeRow(TabParry, 34)
+    makeLabel(rangeRow, "Range (studs)", 10, 120)
+    local rangeBox = Instance.new("TextBox", rangeRow)
+    rangeBox.Size = UDim2.new(0, 50, 0, 22)
+    rangeBox.Position = UDim2.new(1, -58, 0.5, -11)
+    rangeBox.BackgroundColor3 = COLORS.THEME_DARK
+    rangeBox.Text = tostring(PARRY_MAX_DISTANCE)
+    rangeBox.Font = Enum.Font.GothamSemibold
+    rangeBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    rangeBox.TextSize = 11
+    rangeBox.ClearTextOnFocus = false
+    Instance.new("UICorner", rangeBox).CornerRadius = UDim.new(0, 5)
+    local rbStroke = Instance.new("UIStroke", rangeBox)
+    rbStroke.Color = COLORS.THEME; rbStroke.Thickness = 1; rbStroke.Transparency = 0.4
+    rangeBox.FocusLost:Connect(function()
+        local val = tonumber(rangeBox.Text)
+        if val and val > 0 then
+            PARRY_MAX_DISTANCE = math.clamp(val, 1, 60)
             rangeAdornment.Radius = PARRY_MAX_DISTANCE
             rangeAdornment.InnerRadius = PARRY_MAX_DISTANCE - 0.25
+            rangeBox.Text = tostring(PARRY_MAX_DISTANCE)
+        else
+            rangeBox.Text = tostring(PARRY_MAX_DISTANCE)
         end
     end)
 
-    AddInput(TabParry, "Look Threshold", tostring(PARRY_LOOK_THRESHOLD), "-1 to 1", false, function(val)
-        local v = tonumber(val)
-        if v then
-            PARRY_LOOK_THRESHOLD = math.clamp(v, -1, 1)
+    local lookRow = makeRow(TabParry, 34)
+    makeLabel(lookRow, "Look Threshold", 10, 120)
+    local lookBox = Instance.new("TextBox", lookRow)
+    lookBox.Size = UDim2.new(0, 50, 0, 22)
+    lookBox.Position = UDim2.new(1, -58, 0.5, -11)
+    lookBox.BackgroundColor3 = COLORS.THEME_DARK
+    lookBox.Text = tostring(PARRY_LOOK_THRESHOLD)
+    lookBox.Font = Enum.Font.GothamSemibold
+    lookBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    lookBox.TextSize = 11
+    lookBox.ClearTextOnFocus = false
+    Instance.new("UICorner", lookBox).CornerRadius = UDim.new(0, 5)
+    local lbStroke = Instance.new("UIStroke", lookBox)
+    lbStroke.Color = COLORS.THEME; lbStroke.Thickness = 1; lbStroke.Transparency = 0.4
+    lookBox.FocusLost:Connect(function()
+        local val = tonumber(lookBox.Text)
+        if val then
+            PARRY_LOOK_THRESHOLD = math.clamp(val, -1, 1)
+            lookBox.Text = tostring(PARRY_LOOK_THRESHOLD)
+        else
+            lookBox.Text = tostring(PARRY_LOOK_THRESHOLD)
         end
     end)
+    
+    local animRow = makeRow(TabParry, 34)
+makeLabel(animRow, "Parry Anim", 10, 90)
 
-    -- Parry Anim selector -> Fluent Dropdown
-    local animNames = {}
-    for _, a in ipairs(PARRY_ANIMS) do table.insert(animNames, a.name) end
-    AddDropdown(TabParry, "Parry Anim", animNames, PARRY_ANIMS[selectedAnimIndex].name, function(selected)
-        for i, a in ipairs(PARRY_ANIMS) do
-            if a.name == selected then
-                selectedAnimIndex = i
-                ParryAnimation.AnimationId = a.id
-                break
-            end
-        end
-    end)
+local animPrev = Instance.new("TextButton", animRow)
+animPrev.Size = UDim2.new(0, 22, 0, 22)
+animPrev.Position = UDim2.new(0, 104, 0.5, -11)
+animPrev.BackgroundColor3 = COLORS.THEME_BTN
+animPrev.Text = "<"
+animPrev.Font = Enum.Font.GothamSemibold
+animPrev.TextColor3 = Color3.fromRGB(255, 255, 255)
+animPrev.TextSize = 12
+Instance.new("UICorner", animPrev).CornerRadius = UDim.new(0, 5)
+local apStroke = Instance.new("UIStroke", animPrev)
+apStroke.Color = COLORS.THEME; apStroke.Thickness = 1; apStroke.Transparency = 0.4
 
-    AddInput(TabParry, "Anim Start Thresh", tostring(PARRY_ANIMATION_START_THRESHOLD), "0-1", false, function(val)
-        local v = tonumber(val)
-        if v then
-            PARRY_ANIMATION_START_THRESHOLD = math.clamp(v, 0, 1)
+local animDisplay = Instance.new("TextLabel", animRow)
+animDisplay.Size = UDim2.new(0, 90, 0, 22)
+animDisplay.Position = UDim2.new(0, 130, 0.5, -11)
+animDisplay.BackgroundColor3 = COLORS.THEME_DARK
+animDisplay.Text = PARRY_ANIMS[selectedAnimIndex].name
+animDisplay.Font = Enum.Font.GothamSemibold
+animDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
+animDisplay.TextSize = 11
+animDisplay.TextXAlignment = Enum.TextXAlignment.Center
+Instance.new("UICorner", animDisplay).CornerRadius = UDim.new(0, 5)
+local adStroke = Instance.new("UIStroke", animDisplay)
+adStroke.Color = COLORS.THEME; adStroke.Thickness = 1; adStroke.Transparency = 0.4
+
+local animNext = Instance.new("TextButton", animRow)
+animNext.Size = UDim2.new(0, 22, 0, 22)
+animNext.Position = UDim2.new(0, 224, 0.5, -11)
+animNext.BackgroundColor3 = COLORS.THEME_BTN
+animNext.Text = ">"
+animNext.Font = Enum.Font.GothamSemibold
+animNext.TextColor3 = Color3.fromRGB(255, 255, 255)
+animNext.TextSize = 12
+Instance.new("UICorner", animNext).CornerRadius = UDim.new(0, 5)
+local anStroke = Instance.new("UIStroke", animNext)
+anStroke.Color = COLORS.THEME; anStroke.Thickness = 1; anStroke.Transparency = 0.4
+
+local function updateAnimSelection()
+    animDisplay.Text = PARRY_ANIMS[selectedAnimIndex].name
+    ParryAnimation.AnimationId = PARRY_ANIMS[selectedAnimIndex].id
+end
+
+animPrev.MouseButton1Click:Connect(function()
+    selectedAnimIndex = selectedAnimIndex - 1
+    if selectedAnimIndex < 1 then selectedAnimIndex = #PARRY_ANIMS end
+    updateAnimSelection()
+end)
+
+animNext.MouseButton1Click:Connect(function()
+    selectedAnimIndex = selectedAnimIndex + 1
+    if selectedAnimIndex > #PARRY_ANIMS then selectedAnimIndex = 1 end
+    updateAnimSelection()
+end)
+
+    local animTRow = makeRow(TabParry, 34)
+    makeLabel(animTRow, "Anim Start Thresh.", 10, 130)
+    local animTBox = Instance.new("TextBox", animTRow)
+    animTBox.Size = UDim2.new(0, 50, 0, 22)
+    animTBox.Position = UDim2.new(1, -58, 0.5, -11)
+    animTBox.BackgroundColor3 = COLORS.THEME_DARK
+    animTBox.Text = tostring(PARRY_ANIMATION_START_THRESHOLD)
+    animTBox.Font = Enum.Font.GothamSemibold
+    animTBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    animTBox.TextSize = 11
+    animTBox.ClearTextOnFocus = false
+    Instance.new("UICorner", animTBox).CornerRadius = UDim.new(0, 5)
+    local atStroke = Instance.new("UIStroke", animTBox)
+    atStroke.Color = COLORS.THEME; atStroke.Thickness = 1; atStroke.Transparency = 0.4
+    animTBox.FocusLost:Connect(function()
+        local val = tonumber(animTBox.Text)
+        if val then
+            PARRY_ANIMATION_START_THRESHOLD = math.clamp(val, 0, 1)
+            animTBox.Text = tostring(PARRY_ANIMATION_START_THRESHOLD)
+        else
+            animTBox.Text = tostring(PARRY_ANIMATION_START_THRESHOLD)
         end
     end)
 end
@@ -2844,19 +3613,51 @@ local function setupMoonwalkFeatures()
 
     -- tab mano
 
-    -- PC Toggle + keybind (Fluent)
-    AddKeybind(TabMoonwalk, "Moonwalk (PC) Key", Enum.KeyCode.M, function(key)
-        mwKeybind = key
+    -- PC Toggle + keybind
+    local pcRow = makeRow(TabMoonwalk, 34)
+    makeLabel(pcRow, "Moonwalk (PC)", 10, 110)
+
+    local keybindBtn = Instance.new("TextButton", pcRow)
+    keybindBtn.Size              = UDim2.new(0, 34, 0, 22)
+    keybindBtn.Position          = UDim2.new(1, -90, 0.5, -11)
+    keybindBtn.BackgroundColor3  = COLORS.THEME_DARK
+    keybindBtn.Text              = "M"
+    keybindBtn.Font              = Enum.Font.GothamSemibold
+    keybindBtn.TextColor3        = Color3.fromRGB(255, 255, 255)
+    keybindBtn.TextSize          = 10
+    Instance.new("UICorner", keybindBtn).CornerRadius = UDim.new(0, 5)
+    local kbStroke = Instance.new("UIStroke", keybindBtn)
+    kbStroke.Color = COLORS.THEME; kbStroke.Thickness = 1; kbStroke.Transparency = 0.4
+
+    keybindBtn.MouseButton1Click:Connect(function()
+        if listeningForKey then return end
+        listeningForKey = true
+        keybindBtn.Text = "..."
+        keybindBtn.TextColor3 = Color3.fromRGB(255, 210, 60)
+        local conn
+        conn = UserInputService.InputBegan:Connect(function(inp, gp)
+            if gp or inp.UserInputType ~= Enum.UserInputType.Keyboard then return end
+            conn:Disconnect()
+            mwKeybind = inp.KeyCode
+            keybindBtn.Text = inp.KeyCode.Name
+            keybindBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+            listeningForKey = false
+        end)
     end)
 
-    AddToggle(TabMoonwalk, "Moonwalk (PC)", function(v)
-        pcEnabled = v
+    local pcSwitch, pcDot = makeSwitch(pcRow)
+    pcSwitch.MouseButton1Click:Connect(function()
+        pcEnabled = not pcEnabled
+        animSwitch(pcSwitch, pcDot, pcEnabled)
         if not pcEnabled and moonwalkActive then
             moonwalkActive = false; applyMoonwalk()
         end
     end)
 
     -- Mobile Toggle + draggable button
+    local mobRow = makeRow(TabMoonwalk, 34)
+    makeLabel(mobRow, "Moonwalk (Mobile)", 10, 130)
+
     local function destroyMobileGui()
         if mobileGui then mobileGui:Destroy(); mobileGui = nil end
     end
@@ -2874,17 +3675,17 @@ local function setupMoonwalkFeatures()
         btn.Size             = UDim2.new(0, 60, 0, 60)
         btn.Position         = UDim2.new(0.5, -30, 0.8, 0)
         btn.BackgroundColor3    = Color3.fromRGB(10, 10, 25)
-        btn.BackgroundTransparency = 1
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0)
+btn.BackgroundTransparency = 1
+Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0)
         btn.Text = ""
-        local btnIcon = Instance.new("ImageLabel", btn)
-        btnIcon.Size                 = UDim2.new(1, 0, 1, 0)
-        btnIcon.Position             = UDim2.new(0, 0, 0, 0)
-        btnIcon.BackgroundTransparency = 1
-        btnIcon.Image                = "rbxassetid://99735480595595"
-        btnIcon.ScaleType            = Enum.ScaleType.Fit
-        btnIcon.ZIndex               = 2
-        Instance.new("UICorner", btnIcon).CornerRadius = UDim.new(1, 0)
+local btnIcon = Instance.new("ImageLabel", btn)
+btnIcon.Size                 = UDim2.new(1, 0, 1, 0)
+btnIcon.Position             = UDim2.new(0, 0, 0, 0)
+btnIcon.BackgroundTransparency = 1
+btnIcon.Image                = "rbxassetid://99735480595595"
+btnIcon.ScaleType            = Enum.ScaleType.Fit
+btnIcon.ZIndex               = 2
+Instance.new("UICorner", btnIcon).CornerRadius = UDim.new(1, 0)
         local btnStroke = Instance.new("UIStroke", btn)
         btnStroke.Color = Color3.fromRGB(55, 55, 155); btnStroke.Thickness = 1.5
 
@@ -2895,13 +3696,13 @@ local function setupMoonwalkFeatures()
         Instance.new("UICorner", dot).CornerRadius = UDim.new(1, 0)
 
         local function updateDot()
-            dot.BackgroundColor3 = moonwalkActive
-                and Color3.fromRGB(98, 63, 117) or Color3.fromRGB(60, 60, 60)
-            btnStroke.Color = moonwalkActive
-                and Color3.fromRGB(98, 63, 117) or Color3.fromRGB(45, 45, 45)
-            btn.BackgroundColor3 = moonwalkActive
-                and Color3.fromRGB(60, 35, 75) or Color3.fromRGB(10, 10, 25)
-        end
+    dot.BackgroundColor3 = moonwalkActive
+        and COLORS.THEME or Color3.fromRGB(60, 60, 60)
+    btnStroke.Color = moonwalkActive
+        and COLORS.THEME or Color3.fromRGB(45, 45, 45)
+    btn.BackgroundColor3 = moonwalkActive
+        and COLORS.THEME_DARK or Color3.fromRGB(10, 10, 25)
+end
 
         local dragging, dragStart, startPos, activeInput, tapConsumed = false, nil, nil, nil, false
         btn.InputBegan:Connect(function(inp)
@@ -2934,8 +3735,10 @@ local function setupMoonwalkFeatures()
         mobileGui = mwGui
     end
 
-    AddToggle(TabMoonwalk, "Moonwalk (Mobile)", function(v)
-        mobileEnabled = v
+    local mobSwitch, mobDot = makeSwitch(mobRow)
+    mobSwitch.MouseButton1Click:Connect(function()
+        mobileEnabled = not mobileEnabled
+        animSwitch(mobSwitch, mobDot, mobileEnabled)
         if mobileEnabled then
             createMobileGui()
         else
@@ -2944,13 +3747,83 @@ local function setupMoonwalkFeatures()
         end
     end)
 
-    -- Sliders (Fluent)
-    makeMwSlider(TabMoonwalk, "Walk Speed",    "MOONWALK_SPEED", 2,    30,   0, MwCfg)
-    makeMwSlider(TabMoonwalk, "Swing Width",   "SWING_WIDTH",    0,    15,   1, MwCfg)
-    makeMwSlider(TabMoonwalk, "Max Yaw",       "MAX_YAW",        0,    60,   0, MwCfg)
-    makeMwSlider(TabMoonwalk, "Lerp Factor",   "LERP_FACTOR",    0.01, 0.5,  2, MwCfg)
-    makeMwSlider(TabMoonwalk, "Step Interval", "STEP_INTERVAL",  0.04, 0.4,  2, MwCfg)
-    makeMwSlider(TabMoonwalk, "Turn Speed",    "TURN_LERP",      0.01, 0.2,  2, MwCfg)
+    -- slider
+    local function makeMwSlider(labelText, key, minVal, maxVal, decimals)
+        local row = makeRow(TabMoonwalk, 50)
+        makeLabel(row, labelText, 10, 120)
+
+        local valLbl = Instance.new("TextLabel", row)
+        valLbl.Size               = UDim2.new(0, 40, 0, 14)
+        valLbl.Position           = UDim2.new(1, -48, 0, 6)
+        valLbl.BackgroundTransparency = 1
+        valLbl.TextColor3         = Color3.fromRGB(170, 140, 200)
+        valLbl.TextSize           = 10
+        valLbl.Font               = Enum.Font.GothamBold
+        valLbl.TextXAlignment     = Enum.TextXAlignment.Right
+
+        local trackBg = Instance.new("Frame", row)
+        trackBg.Size             = UDim2.new(1, -16, 0, 6)
+        trackBg.Position         = UDim2.new(0, 8, 1, -14)
+        trackBg.BackgroundColor3 = COLORS.THEME_DARKER
+        trackBg.BorderSizePixel  = 0
+        Instance.new("UICorner", trackBg).CornerRadius = UDim.new(0, 3)
+        local ts = Instance.new("UIStroke", trackBg)
+        ts.Color = COLORS.THEME; ts.Thickness = 1; ts.Transparency = 0.6
+
+        local trackFill = Instance.new("Frame", trackBg)
+        trackFill.Size             = UDim2.new(0, 0, 1, 0)
+        trackFill.BackgroundColor3 = COLORS.THEME
+        trackFill.BorderSizePixel  = 0
+        Instance.new("UICorner", trackFill).CornerRadius = UDim.new(0, 3)
+
+        local thumb = Instance.new("Frame", trackBg)
+        thumb.Size             = UDim2.new(0, 10, 0, 10)
+        thumb.AnchorPoint      = Vector2.new(0.5, 0.5)
+        thumb.BackgroundColor3 = Color3.fromRGB(220, 200, 240)
+        thumb.BorderSizePixel  = 0
+        Instance.new("UICorner", thumb).CornerRadius = UDim.new(1, 0)
+
+        local function updateSlider(val)
+            val = math.clamp(val, minVal, maxVal)
+            local t = (val - minVal) / (maxVal - minVal)
+            trackFill.Size = UDim2.new(t, 0, 1, 0)
+            thumb.Position = UDim2.new(t, 0, 0.5, 0)
+            valLbl.Text = string.format(decimals > 0 and ("%." .. decimals .. "f") or "%d", val)
+            MwCfg[key]  = val
+        end
+        updateSlider(MwCfg[key])
+
+        local draggingSlider = false
+        trackBg.InputBegan:Connect(function(inp)
+            if inp.UserInputType == Enum.UserInputType.MouseButton1
+            or inp.UserInputType == Enum.UserInputType.Touch then
+                draggingSlider = true
+                local rel = inp.Position.X - trackBg.AbsolutePosition.X
+                updateSlider(minVal + (maxVal - minVal) * math.clamp(rel / trackBg.AbsoluteSize.X, 0, 1))
+            end
+        end)
+        UserInputService.InputChanged:Connect(function(inp)
+            if not draggingSlider then return end
+            if inp.UserInputType == Enum.UserInputType.MouseMovement
+            or inp.UserInputType == Enum.UserInputType.Touch then
+                local rel = inp.Position.X - trackBg.AbsolutePosition.X
+                updateSlider(minVal + (maxVal - minVal) * math.clamp(rel / trackBg.AbsoluteSize.X, 0, 1))
+            end
+        end)
+        UserInputService.InputEnded:Connect(function(inp)
+            if inp.UserInputType == Enum.UserInputType.MouseButton1
+            or inp.UserInputType == Enum.UserInputType.Touch then
+                draggingSlider = false
+            end
+        end)
+    end
+
+    makeMwSlider("Walk Speed",    "MOONWALK_SPEED", 2,    30,   0)
+    makeMwSlider("Swing Width",   "SWING_WIDTH",    0,    15,   1)
+    makeMwSlider("Max Yaw",       "MAX_YAW",        0,    60,   0)
+    makeMwSlider("Lerp Factor",   "LERP_FACTOR",    0.01, 0.5,  2)
+    makeMwSlider("Step Interval", "STEP_INTERVAL",  0.04, 0.4,  2)
+    makeMwSlider("Turn Speed",    "TURN_LERP",      0.01, 0.2,  2)
 end
 setupMoonwalkFeatures()
 
@@ -3022,77 +3895,199 @@ AddToggle(TabKiller, "Break Whole Gen", function(v)
     Extras.breakGenEnabled = v
 end)
 
-AddInput(TabKiller, "Break Count", tostring(Extras.breakGenCount), "2-10", true, function(val)
-    local v = tonumber(val)
-    if v then
-        Extras.breakGenCount = math.clamp(math.floor(v), 2, 10)
+local bgCountFrame = Instance.new("Frame", TabKiller)
+bgCountFrame.Size = UDim2.new(1, -8, 0, 34)
+bgCountFrame.BackgroundColor3 = COLORS.THEME_DARKER
+bgCountFrame.BackgroundTransparency = 0.2
+Instance.new("UICorner", bgCountFrame).CornerRadius = UDim.new(0, 6)
+local bgStroke = Instance.new("UIStroke", bgCountFrame)
+bgStroke.Color = COLORS.THEME; bgStroke.Thickness = 1; bgStroke.Transparency = 0.7
+
+local bgLabel = Instance.new("TextLabel", bgCountFrame)
+bgLabel.Size = UDim2.new(1, -90, 1, 0)
+bgLabel.Position = UDim2.new(0, 10, 0, 0)
+bgLabel.Text = "Break Count"
+bgLabel.Font = Enum.Font.Gotham
+bgLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+bgLabel.TextSize = 11
+bgLabel.TextXAlignment = Enum.TextXAlignment.Left
+bgLabel.BackgroundTransparency = 1
+
+local bgBox = Instance.new("TextBox", bgCountFrame)
+bgBox.Size = UDim2.new(0, 50, 0, 22)
+bgBox.Position = UDim2.new(1, -58, 0.5, -11)
+bgBox.BackgroundColor3 = COLORS.THEME_DARK
+bgBox.Text = tostring(Extras.breakGenCount)
+bgBox.Font = Enum.Font.GothamSemibold
+bgBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+bgBox.TextSize = 11
+bgBox.PlaceholderText = "2-10"
+bgBox.ClearTextOnFocus = false
+Instance.new("UICorner", bgBox).CornerRadius = UDim.new(0, 5)
+local bgBoxStroke = Instance.new("UIStroke", bgBox)
+bgBoxStroke.Color = COLORS.THEME; bgBoxStroke.Thickness = 1; bgBoxStroke.Transparency = 0.4
+
+bgBox.FocusLost:Connect(function()
+    local val = tonumber(bgBox.Text)
+    if val then
+        val = math.clamp(math.floor(val), 2, 10)
+        Extras.breakGenCount = val
+        bgBox.Text = tostring(val)
+    else
+        bgBox.Text = tostring(Extras.breakGenCount)
     end
 end)
 
--- The Masked: pakai beberapa AddButton
-AddSection(TabKiller, "The Masked")
-AddButton(TabKiller, "Rabbit", function() MaskedPower:FireServer("Rabbit") end)
-AddButton(TabKiller, "Tony", function() MaskedPower:FireServer("Tony") end)
-AddButton(TabKiller, "Richter", function() MaskedPower:FireServer("Richter") end)
-AddButton(TabKiller, "Cobra", function() MaskedPower:FireServer("Cobra") end)
-AddButton(TabKiller, "Alex", function() MaskedPower:FireServer("Alex") end)
-AddButton(TabKiller, "Brandon", function() MaskedPower:FireServer("Brandon") end)
-AddButton(TabKiller, "Deactivate Power", function() MaskedDepower:FireServer() end)
+local maskedOpen = false
 
--- Myers Grab: keybind + toggle
-AddKeybind(TabKiller, "Myers Grab Key", Enum.KeyCode.Unknown, function(key)
-    Extras.myersGrabKey = key
+local maskedBar = Instance.new("TextButton", TabKiller)
+maskedBar.Size = UDim2.new(1, -8, 0, 32)
+maskedBar.BackgroundColor3 = COLORS.THEME
+maskedBar.BackgroundTransparency = 0.1
+maskedBar.Font = Enum.Font.GothamBold
+maskedBar.TextColor3 = Color3.fromRGB(255, 255, 255)
+maskedBar.TextSize = 12
+maskedBar.Text = "▶  The Masked"
+maskedBar.TextXAlignment = Enum.TextXAlignment.Left
+maskedBar.AutoButtonColor = false
+Instance.new("UICorner", maskedBar).CornerRadius = UDim.new(0, 6)
+local maskedBarStroke = Instance.new("UIStroke", maskedBar)
+maskedBarStroke.Color = Color3.fromRGB(60, 61, 70)
+maskedBarStroke.Thickness = 1.5
+
+local maskedContainer = Instance.new("Frame", TabKiller)
+maskedContainer.Size = UDim2.new(1, -8, 0, 0)
+maskedContainer.BackgroundTransparency = 1
+maskedContainer.ClipsDescendants = true
+Instance.new("UIListLayout", maskedContainer).Padding = UDim.new(0, 8)
+
+local function addMaskedButton(name, cb)
+    local btn = Instance.new("TextButton", maskedContainer)
+    btn.Size = UDim2.new(1, 0, 0, 30)
+    btn.BackgroundColor3 = COLORS.THEME_BTN
+    btn.BackgroundTransparency = 0.2
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.TextSize = 11
+    btn.Text = name
+    btn.AutoButtonColor = false
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+    btn.MouseButton1Click:Connect(cb)
+end
+
+addMaskedButton("Rabbit",          function() MaskedPower:FireServer("Rabbit") end)
+addMaskedButton("Tony",            function() MaskedPower:FireServer("Tony") end)
+addMaskedButton("Richter",         function() MaskedPower:FireServer("Richter") end)
+addMaskedButton("Cobra",           function() MaskedPower:FireServer("Cobra") end)
+addMaskedButton("Alex",            function() MaskedPower:FireServer("Alex") end)
+addMaskedButton("Brandon",         function() MaskedPower:FireServer("Brandon") end)
+addMaskedButton("Deactivate Power",function() MaskedDepower:FireServer() end)
+
+local MASKED_EXPANDED_SIZE = 34 * 7 + 4 * 6 -- 7 botões * altura + padding
+
+maskedBar.MouseButton1Click:Connect(function()
+    maskedOpen = not maskedOpen
+    maskedBar.Text = (maskedOpen and "▼" or "▶") .. "  The Masked"
+    local target = maskedOpen and MASKED_EXPANDED_SIZE or 0
+    game:GetService("TweenService"):Create(
+        maskedContainer,
+        TweenInfo.new(0.2),
+        {Size = UDim2.new(1, -8, 0, target)}
+    ):Play()
 end)
 
--- Myers Grab floating button (custom, tetap ImageButton)
-local MyersGrabBtn = Instance.new("ImageButton", AiiSigma)
-MyersGrabBtn.Size = UDim2.new(0, 70, 0, 70)
-MyersGrabBtn.Position = UDim2.new(0.7, 0, 0.75, 0)
-MyersGrabBtn.BackgroundColor3 = Color3.fromRGB(30, 15, 40)
-MyersGrabBtn.BackgroundTransparency = 0.1
-MyersGrabBtn.Image = ""
-MyersGrabBtn.Visible = false
-Instance.new("UICorner", MyersGrabBtn).CornerRadius = UDim.new(1, 0)
-local mgStroke = Instance.new("UIStroke", MyersGrabBtn)
-mgStroke.Color = Color3.fromRGB(98, 63, 117)
-mgStroke.Thickness = 2
+local myersRow = makeRow(TabKiller, 34)
+local myersLabel = makeLabel(myersRow, "Myers Grab", 10, 140)
+local myersSwitch, myersDot = makeSwitch(myersRow)
 
-local mgLabel = Instance.new("TextLabel", MyersGrabBtn)
-mgLabel.Size = UDim2.new(1, 0, 1, 0)
-mgLabel.BackgroundTransparency = 1
-mgLabel.Text = "Grab"
-mgLabel.Font = Enum.Font.GothamBold
-mgLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-mgLabel.TextSize = 14
+local myersKeyBtn = Instance.new("TextButton", myersRow)
+myersKeyBtn.Size = UDim2.new(0, 32, 0, 20)
+myersKeyBtn.Position = UDim2.new(1, -78, 0.5, -10)
+myersKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
+myersKeyBtn.BackgroundTransparency = 0.2
+myersKeyBtn.Text = "---"
+myersKeyBtn.Font = Enum.Font.GothamBold
+myersKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+myersKeyBtn.TextSize = 10
+Instance.new("UICorner", myersKeyBtn).CornerRadius = UDim.new(0, 4)
+local mkStroke = Instance.new("UIStroke", myersKeyBtn)
+mkStroke.Color = COLORS.THEME; mkStroke.Thickness = 1; mkStroke.Transparency = 0.5
 
-MyersGrabBtn.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                if Extras.myersDragLocked then return end
-                Extras.myersDragging = true
-                Extras.myersDragStart = input.Position
-                Extras.myersDragStartPos = MyersGrabBtn.Position
+myersKeyBtn.MouseButton1Click:Connect(function()
+    if Extras.listeningMyersKey then return end
+    Extras.listeningMyersKey = true
+    myersKeyBtn.Text = "..."
+    myersKeyBtn.TextColor3 = Color3.fromRGB(255, 220, 80)
+    local conn
+    conn = UserInputService.InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if input.UserInputType == Enum.UserInputType.Keyboard then
+            Extras.myersGrabKey = input.KeyCode
+            local kname = keyCodeName(input.KeyCode)
+            myersKeyBtn.Text = kname
+            myersKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+            myersLabel.Text = "Myers Grab [" .. kname .. "]"
+            Extras.listeningMyersKey = false
+            conn:Disconnect()
         end
+    end)
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-        if Extras.myersDragging and not Extras.myersDragLocked and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                local delta = input.Position - Extras.myersDragStart
-                MyersGrabBtn.Position = UDim2.new(Extras.myersDragStartPos.X.Scale, Extras.myersDragStartPos.X.Offset + delta.X, Extras.myersDragStartPos.Y.Scale, Extras.myersDragStartPos.Y.Offset + delta.Y)
-        end
-end)
+local function setupMyersGrabBtn()
+        local MyersGrabBtn = Instance.new("ImageButton", AiiSigma)
+        MyersGrabBtn.Size = UDim2.new(0, 70, 0, 70)
+        MyersGrabBtn.Position = UDim2.new(0.7, 0, 0.75, 0)
+        MyersGrabBtn.BackgroundColor3 = COLORS.THEME_DARKER
+        MyersGrabBtn.BackgroundTransparency = 0.1
+        MyersGrabBtn.Image = ""
+        MyersGrabBtn.Visible = false
+        Instance.new("UICorner", MyersGrabBtn).CornerRadius = UDim.new(1, 0)
+        local mgStroke = Instance.new("UIStroke", MyersGrabBtn)
+        mgStroke.Color = COLORS.THEME
+        mgStroke.Thickness = 2
 
-MyersGrabBtn.InputEnded:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                Extras.myersDragging = false
-        end
-end)
+        local mgLabel = Instance.new("TextLabel", MyersGrabBtn)
+        mgLabel.Size = UDim2.new(1, 0, 1, 0)
+        mgLabel.BackgroundTransparency = 1
+        mgLabel.Text = "Grab"
+        mgLabel.Font = Enum.Font.GothamBold
+        mgLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+        mgLabel.TextSize = 14
 
-MyersGrabBtn.MouseButton1Click:Connect(doMyersGrab)
+        MyersGrabBtn.InputBegan:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        if Extras.myersDragLocked then return end
+                        Extras.myersDragging = true
+                        Extras.myersDragStart = input.Position
+                        Extras.myersDragStartPos = MyersGrabBtn.Position
+                end
+        end)
 
-AddToggle(TabKiller, "Myers Grab", function(v)
-    Extras.myersGrabEnabled = v
-    MyersGrabBtn.Visible = v
-end)
+        UserInputService.InputChanged:Connect(function(input)
+                if Extras.myersDragging and not Extras.myersDragLocked and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                        local delta = input.Position - Extras.myersDragStart
+                        MyersGrabBtn.Position = UDim2.new(Extras.myersDragStartPos.X.Scale, Extras.myersDragStartPos.X.Offset + delta.X, Extras.myersDragStartPos.Y.Scale, Extras.myersDragStartPos.Y.Offset + delta.Y)
+                end
+        end)
+
+        MyersGrabBtn.InputEnded:Connect(function(input)
+                if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                        Extras.myersDragging = false
+                end
+        end)
+
+        MyersGrabBtn.MouseButton1Click:Connect(doMyersGrab)
+
+        myersSwitch.MouseButton1Click:Connect(function()
+                Extras.myersGrabEnabled = not Extras.myersGrabEnabled
+                animSwitch(myersSwitch, myersDot, Extras.myersGrabEnabled)
+                MyersGrabBtn.Visible = Extras.myersGrabEnabled
+        end)
+
+        return MyersGrabBtn
+end
+
+setupMyersGrabBtn()
 
 UserInputService.InputBegan:Connect(function(input, gp)
     if gp or Extras.listeningMyersKey then return end
@@ -3125,50 +4120,205 @@ local function setupVeilTabFeatures()
         VeilConfig.ShowFOV = v
     end)
 
-    AddInput(TabVeil, "FOV Radius", tostring(VeilConfig.FOV), "50-500", true, function(val)
-        local v = tonumber(val)
-        if v then
-            VeilConfig.FOV = math.clamp(math.floor(v), 50, 500)
+    -- Slider FOV
+    local fovRow = Instance.new("Frame", TabVeil)
+    fovRow.Size = UDim2.new(1, -8, 0, 34)
+    fovRow.BackgroundColor3 = COLORS.THEME_DARKER
+    fovRow.BackgroundTransparency = 0.2
+    Instance.new("UICorner", fovRow).CornerRadius = UDim.new(0, 6)
+    local fovStroke = Instance.new("UIStroke", fovRow)
+    fovStroke.Color = COLORS.THEME; fovStroke.Thickness = 1; fovStroke.Transparency = 0.7
+    local fovLabel = Instance.new("TextLabel", fovRow)
+    fovLabel.Size = UDim2.new(1, -90, 1, 0)
+    fovLabel.Position = UDim2.new(0, 10, 0, 0)
+    fovLabel.Text = "FOV Radius"
+    fovLabel.Font = Enum.Font.Gotham
+    fovLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+    fovLabel.TextSize = 11
+    fovLabel.TextXAlignment = Enum.TextXAlignment.Left
+    fovLabel.BackgroundTransparency = 1
+    local fovBox = Instance.new("TextBox", fovRow)
+    fovBox.Size = UDim2.new(0, 50, 0, 22)
+    fovBox.Position = UDim2.new(1, -58, 0.5, -11)
+    fovBox.BackgroundColor3 = COLORS.THEME_DARK
+    fovBox.Text = tostring(VeilConfig.FOV)
+    fovBox.Font = Enum.Font.GothamSemibold
+    fovBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    fovBox.TextSize = 11
+    fovBox.PlaceholderText = "50-500"
+    fovBox.ClearTextOnFocus = false
+    Instance.new("UICorner", fovBox).CornerRadius = UDim.new(0, 5)
+    local fovBoxStroke = Instance.new("UIStroke", fovBox)
+    fovBoxStroke.Color = COLORS.THEME; fovBoxStroke.Thickness = 1; fovBoxStroke.Transparency = 0.4
+    fovBox.FocusLost:Connect(function()
+        local val = tonumber(fovBox.Text)
+        if val then
+            val = math.clamp(math.floor(val), 50, 500)
+            VeilConfig.FOV = val
+            fovBox.Text = tostring(val)
+        else
+            fovBox.Text = tostring(VeilConfig.FOV)
         end
     end)
 
-    AddInput(TabVeil, "Spear Speed", tostring(VeilConfig.SpearSpeed), "50-400", true, function(val)
-        local v = tonumber(val)
-        if v then
-            VeilConfig.SpearSpeed = math.clamp(math.floor(v), 50, 400)
+    -- Slider Spear Speed
+    local speedRow = Instance.new("Frame", TabVeil)
+    speedRow.Size = UDim2.new(1, -8, 0, 34)
+    speedRow.BackgroundColor3 = COLORS.THEME_DARKER
+    speedRow.BackgroundTransparency = 0.2
+    Instance.new("UICorner", speedRow).CornerRadius = UDim.new(0, 6)
+    local speedStroke = Instance.new("UIStroke", speedRow)
+    speedStroke.Color = COLORS.THEME; speedStroke.Thickness = 1; speedStroke.Transparency = 0.7
+    local speedLabel = Instance.new("TextLabel", speedRow)
+    speedLabel.Size = UDim2.new(1, -90, 1, 0)
+    speedLabel.Position = UDim2.new(0, 10, 0, 0)
+    speedLabel.Text = "Spear Speed"
+    speedLabel.Font = Enum.Font.Gotham
+    speedLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+    speedLabel.TextSize = 11
+    speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+    speedLabel.BackgroundTransparency = 1
+    local speedBox = Instance.new("TextBox", speedRow)
+    speedBox.Size = UDim2.new(0, 50, 0, 22)
+    speedBox.Position = UDim2.new(1, -58, 0.5, -11)
+    speedBox.BackgroundColor3 = COLORS.THEME_DARK
+    speedBox.Text = tostring(VeilConfig.SpearSpeed)
+    speedBox.Font = Enum.Font.GothamSemibold
+    speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    speedBox.TextSize = 11
+    speedBox.PlaceholderText = "50-400"
+    speedBox.ClearTextOnFocus = false
+    Instance.new("UICorner", speedBox).CornerRadius = UDim.new(0, 5)
+    local speedBoxStroke = Instance.new("UIStroke", speedBox)
+    speedBoxStroke.Color = COLORS.THEME; speedBoxStroke.Thickness = 1; speedBoxStroke.Transparency = 0.4
+    speedBox.FocusLost:Connect(function()
+        local val = tonumber(speedBox.Text)
+        if val then
+            val = math.clamp(math.floor(val), 50, 400)
+            VeilConfig.SpearSpeed = val
+            speedBox.Text = tostring(val)
+        else
+            speedBox.Text = tostring(VeilConfig.SpearSpeed)
         end
     end)
 
-    AddInput(TabVeil, "Gravity", tostring(math.floor(VeilConfig.Gravity)), "0-300", true, function(val)
-        local v = tonumber(val)
-        if v then
-            VeilConfig.Gravity = math.clamp(math.floor(v), 0, 300)
+    -- Slider Gravity
+    local gravRow = Instance.new("Frame", TabVeil)
+    gravRow.Size = UDim2.new(1, -8, 0, 34)
+    gravRow.BackgroundColor3 = COLORS.THEME_DARKER
+    gravRow.BackgroundTransparency = 0.2
+    Instance.new("UICorner", gravRow).CornerRadius = UDim.new(0, 6)
+    local gravStroke = Instance.new("UIStroke", gravRow)
+    gravStroke.Color = COLORS.THEME; gravStroke.Thickness = 1; gravStroke.Transparency = 0.7
+    local gravLabel = Instance.new("TextLabel", gravRow)
+    gravLabel.Size = UDim2.new(1, -90, 1, 0)
+    gravLabel.Position = UDim2.new(0, 10, 0, 0)
+    gravLabel.Text = "Gravity"
+    gravLabel.Font = Enum.Font.Gotham
+    gravLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+    gravLabel.TextSize = 11
+    gravLabel.TextXAlignment = Enum.TextXAlignment.Left
+    gravLabel.BackgroundTransparency = 1
+    local gravBox = Instance.new("TextBox", gravRow)
+    gravBox.Size = UDim2.new(0, 50, 0, 22)
+    gravBox.Position = UDim2.new(1, -58, 0.5, -11)
+    gravBox.BackgroundColor3 = COLORS.THEME_DARK
+    gravBox.Text = tostring(math.floor(VeilConfig.Gravity))
+    gravBox.Font = Enum.Font.GothamSemibold
+    gravBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    gravBox.TextSize = 11
+    gravBox.PlaceholderText = "0-300"
+    gravBox.ClearTextOnFocus = false
+    Instance.new("UICorner", gravBox).CornerRadius = UDim.new(0, 5)
+    local gravBoxStroke = Instance.new("UIStroke", gravBox)
+    gravBoxStroke.Color = COLORS.THEME; gravBoxStroke.Thickness = 1; gravBoxStroke.Transparency = 0.4
+    gravBox.FocusLost:Connect(function()
+        local val = tonumber(gravBox.Text)
+        if val then
+            val = math.clamp(math.floor(val), 0, 300)
+            VeilConfig.Gravity = val
+            gravBox.Text = tostring(val)
+        else
+            gravBox.Text = tostring(math.floor(VeilConfig.Gravity))
         end
     end)
 
-    AddInput(TabVeil, "Horizontal Factor", tostring(VeilConfig.HorizontalPredictFactor), "0-10", false, function(val)
-        local v = tonumber(val)
-        if v then
-            VeilConfig.HorizontalPredictFactor = math.clamp(v, 0, 10)
+    -- SLIDER: Horizontal Predict Factor (novo)
+    local hpRow = Instance.new("Frame", TabVeil)
+    hpRow.Size = UDim2.new(1, -8, 0, 34)
+    hpRow.BackgroundColor3 = COLORS.THEME_DARKER
+    hpRow.BackgroundTransparency = 0.2
+    Instance.new("UICorner", hpRow).CornerRadius = UDim.new(0, 6)
+    local hpStroke = Instance.new("UIStroke", hpRow)
+    hpStroke.Color = COLORS.THEME; hpStroke.Thickness = 1; hpStroke.Transparency = 0.7
+    local hpLabel = Instance.new("TextLabel", hpRow)
+    hpLabel.Size = UDim2.new(1, -90, 1, 0)
+    hpLabel.Position = UDim2.new(0, 10, 0, 0)
+    hpLabel.Text = "Horizontal Factor"
+    hpLabel.Font = Enum.Font.Gotham
+    hpLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+    hpLabel.TextSize = 11
+    hpLabel.TextXAlignment = Enum.TextXAlignment.Left
+    hpLabel.BackgroundTransparency = 1
+    local hpBox = Instance.new("TextBox", hpRow)
+    hpBox.Size = UDim2.new(0, 50, 0, 22)
+    hpBox.Position = UDim2.new(1, -58, 0.5, -11)
+    hpBox.BackgroundColor3 = COLORS.THEME_DARK
+    hpBox.Text = tostring(VeilConfig.HorizontalPredictFactor)
+    hpBox.Font = Enum.Font.GothamSemibold
+    hpBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    hpBox.TextSize = 11
+    hpBox.PlaceholderText = "0-10"
+    hpBox.ClearTextOnFocus = false
+    Instance.new("UICorner", hpBox).CornerRadius = UDim.new(0, 5)
+    local hpBoxStroke = Instance.new("UIStroke", hpBox)
+    hpBoxStroke.Color = COLORS.THEME; hpBoxStroke.Thickness = 1; hpBoxStroke.Transparency = 0.4
+    hpBox.FocusLost:Connect(function()
+        local val = tonumber(hpBox.Text)
+        if val then
+            val = math.clamp(val, 0, 10)
+            VeilConfig.HorizontalPredictFactor = val
+            hpBox.Text = tostring(val)
+        else
+            hpBox.Text = tostring(VeilConfig.HorizontalPredictFactor)
         end
     end)
 
-    AddDropdown(TabVeil, "Target Part", {"Torso", "Head", "Root"}, VeilConfig.TargetPart, function(selected)
-        VeilConfig.TargetPart = selected
+    -- Dropdown Target Part
+    local parts = {"Torso", "Head", "Root"}
+    local partIdx = 1
+    local partRow = Instance.new("Frame", TabVeil)
+    partRow.Size = UDim2.new(1, -8, 0, 34)
+    partRow.BackgroundColor3 = COLORS.THEME_DARKER
+    partRow.BackgroundTransparency = 0.2
+    Instance.new("UICorner", partRow).CornerRadius = UDim.new(0, 6)
+    local partStroke = Instance.new("UIStroke", partRow)
+    partStroke.Color = COLORS.THEME; partStroke.Thickness = 1; partStroke.Transparency = 0.7
+    local partLabel = Instance.new("TextLabel", partRow)
+    partLabel.Size = UDim2.new(1, -90, 1, 0)
+    partLabel.Position = UDim2.new(0, 10, 0, 0)
+    partLabel.Text = "Target Part"
+    partLabel.Font = Enum.Font.Gotham
+    partLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
+    partLabel.TextSize = 11
+    partLabel.TextXAlignment = Enum.TextXAlignment.Left
+    partLabel.BackgroundTransparency = 1
+    local partBtn = Instance.new("TextButton", partRow)
+    partBtn.Size = UDim2.new(0, 60, 0, 22)
+    partBtn.Position = UDim2.new(1, -68, 0.5, -11)
+    partBtn.BackgroundColor3 = COLORS.THEME_DARK
+    partBtn.Text = parts[partIdx]
+    partBtn.Font = Enum.Font.GothamSemibold
+    partBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
+    partBtn.TextSize = 10
+    Instance.new("UICorner", partBtn).CornerRadius = UDim.new(0, 5)
+    local partBtnStroke = Instance.new("UIStroke", partBtn)
+    partBtnStroke.Color = COLORS.THEME; partBtnStroke.Thickness = 1; partBtnStroke.Transparency = 0.4
+    partBtn.MouseButton1Click:Connect(function()
+        partIdx = partIdx % #parts + 1
+        partBtn.Text = parts[partIdx]
+        VeilConfig.TargetPart = parts[partIdx]
     end)
-
-    -- ============================================================
-    -- INFORMATION & RECOMMENDED SETTINGS (pakai Fluent Paragraph)
-    -- ============================================================
-    AddSection(TabVeil, "Information")
-    AddParagraph(TabVeil, "📌 Note", "Jika karakter tidak bisa bergerak saat menggunakan Veil, jangan gunakan outfit/skin berwarna hitam.")
-
-    AddSection(TabVeil, "Recommended Settings")
-    AddParagraph(TabVeil, "🎯 Silent Aim Setup", [[
-Spear Speed: 175
-Auto Prediction: ON
-Jarak Optimal: ≤ 110 Studs (Akurasi terbaik)
-Jarak Jauh (~190 Studs): Spear Speed 290]])
 end
 
 setupVeilTabFeatures()
