@@ -1168,8 +1168,8 @@ fovCircle.Color = Color3.fromRGB(255, 255, 255)
 fovCircle.Visible = false
 
 -- ============================================================
--- AiiSigma V1.0 — UI MINIMAL MONOCHROME
--- Hitam / Putih / Abu-abu, card kecil, mobile-friendly
+-- AiiSigma V1.0 — UI MINIMAL MONOCHROME (Font Monospace, Card Gede)
+-- Hitam dominan, font Code (monospace), card gede gampang dipencet
 -- Semua signature helper sama dengan asli (compatible)
 -- ============================================================
 
@@ -1193,6 +1193,10 @@ local M = {
     ACCENT    = Color3.fromRGB(255, 255, 255),  -- putih sebagai accent
 }
 
+-- Font monospace pilihan
+local FONT      = Enum.Font.Code         -- monospace utama
+local FONT_BOLD = Enum.Font.Code         -- monospace (Roblox Code bold lewat TextScaled)
+
 local AiiSigma = Instance.new("ScreenGui", CoreGui)
 AiiSigma.Name = "AiiSigma_V1"
 AiiSigma.ResetOnSpawn = false
@@ -1203,14 +1207,14 @@ local UI = {}
 
 -- ============ FLOATING TOGGLE BUTTON (lingkaran kecil) ============
 UI.FloatingBtn = Instance.new("TextButton", AiiSigma)
-UI.FloatingBtn.Size = UDim2.new(0, 44, 0, 44)
-UI.FloatingBtn.Position = UDim2.new(0, 20, 0.5, -22)
+UI.FloatingBtn.Size = UDim2.new(0, 48, 0, 48)
+UI.FloatingBtn.Position = UDim2.new(0, 20, 0.5, -24)
 UI.FloatingBtn.BackgroundColor3 = M.TXT
 UI.FloatingBtn.BackgroundTransparency = 0
 UI.FloatingBtn.Text = "A"
 UI.FloatingBtn.Font = Enum.Font.GothamBlack
 UI.FloatingBtn.TextColor3 = M.BG_DEEP
-UI.FloatingBtn.TextSize = 18
+UI.FloatingBtn.TextSize = 20
 UI.FloatingBtn.AutoButtonColor = false
 UI.FloatingBtn.ZIndex = 100
 UI.FloatingBtn.Visible = false
@@ -1220,13 +1224,13 @@ fbStroke.Color = M.BG_DEEP
 fbStroke.Thickness = 2
 fbStroke.Transparency = 0.3
 
--- ============ MAIN PANEL (compact 280x340) ============
+-- ============ MAIN PANEL (compact 300x360) ============
 UI.MainFrame = Instance.new("Frame", AiiSigma)
 UI.MainFrame.Name = "MainFrame"
 UI.MainFrame.BackgroundColor3 = M.BG_PANEL
 UI.MainFrame.BackgroundTransparency = 0
-UI.MainFrame.Position = UDim2.new(0.5, -140, 0.5, -170)
-UI.MainFrame.Size = UDim2.new(0, 280, 0, 340)
+UI.MainFrame.Position = UDim2.new(0.5, -150, 0.5, -180)
+UI.MainFrame.Size = UDim2.new(0, 300, 0, 360)
 UI.MainFrame.ClipsDescendants = true
 UI.MainFrame.ZIndex = 10
 Instance.new("UICorner", UI.MainFrame).CornerRadius = UDim.new(0, 8)
@@ -1235,9 +1239,9 @@ mfStroke.Color = M.LINE
 mfStroke.Thickness = 1
 mfStroke.Transparency = 0.2
 
--- ============ TOP BAR (compact 28px) ============
+-- ============ TOP BAR (32px) ============
 UI.TopBar = Instance.new("Frame", UI.MainFrame)
-UI.TopBar.Size = UDim2.new(1, 0, 0, 28)
+UI.TopBar.Size = UDim2.new(1, 0, 0, 32)
 UI.TopBar.BackgroundColor3 = M.BG_DEEP
 UI.TopBar.BackgroundTransparency = 0.4
 UI.TopBar.BorderSizePixel = 0
@@ -1250,41 +1254,41 @@ TopBarLine.BackgroundColor3 = M.LINE
 TopBarLine.BorderSizePixel = 0
 
 UI.Title = Instance.new("TextLabel", UI.TopBar)
-UI.Title.Size = UDim2.new(1, -60, 1, 0)
-UI.Title.Position = UDim2.new(0, 10, 0, 0)
+UI.Title.Size = UDim2.new(1, -80, 1, 0)
+UI.Title.Position = UDim2.new(0, 12, 0, 0)
 UI.Title.Text = "AiiSigma"
-UI.Title.Font = Enum.Font.GothamBold
+UI.Title.Font = FONT
 UI.Title.TextColor3 = M.TXT
-UI.Title.TextSize = 11
+UI.Title.TextSize = 12
 UI.Title.TextXAlignment = Enum.TextXAlignment.Left
 UI.Title.BackgroundTransparency = 1
 
 local TitleVer = Instance.new("TextLabel", UI.TopBar)
-TitleVer.Size = UDim2.new(0, 30, 1, 0)
-TitleVer.Position = UDim2.new(1, -80, 0, 0)
-TitleVer.Text = "V1"
-TitleVer.Font = Enum.Font.GothamBold
+TitleVer.Size = UDim2.new(0, 36, 1, 0)
+TitleVer.Position = UDim2.new(1, -68, 0, 0)
+TitleVer.Text = "V1.0"
+TitleVer.Font = FONT
 TitleVer.TextColor3 = M.TXT_DIM
-TitleVer.TextSize = 9
+TitleVer.TextSize = 10
 TitleVer.TextXAlignment = Enum.TextXAlignment.Right
 TitleVer.BackgroundTransparency = 1
 
--- Close button (kecil, gampang dipencet)
+-- Close button (gede, gampang dipencet)
 local CloseBtn = Instance.new("TextButton", UI.TopBar)
-CloseBtn.Size = UDim2.new(0, 24, 0, 24)
-CloseBtn.Position = UDim2.new(1, -26, 0.5, -12)
-CloseBtn.Text = "×"
+CloseBtn.Size = UDim2.new(0, 28, 0, 28)
+CloseBtn.Position = UDim2.new(1, -30, 0.5, -14)
+CloseBtn.Text = "X"
 CloseBtn.TextColor3 = M.TXT_DIM
 CloseBtn.TextSize = 14
-CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Font = FONT
 CloseBtn.BackgroundTransparency = 1
 CloseBtn.ZIndex = 12
 CloseBtn.AutoButtonColor = false
 
--- ============ TAB STRIP (horizontal, mini) ============
+-- ============ TAB STRIP (horizontal scroll, card panjang) ============
 UI.TabStrip = Instance.new("Frame", UI.MainFrame)
-UI.TabStrip.Size = UDim2.new(1, 0, 0, 30)
-UI.TabStrip.Position = UDim2.new(0, 0, 0, 28)
+UI.TabStrip.Size = UDim2.new(1, 0, 0, 34)
+UI.TabStrip.Position = UDim2.new(0, 0, 0, 32)
 UI.TabStrip.BackgroundColor3 = M.BG_PANEL
 UI.TabStrip.BorderSizePixel = 0
 UI.TabStrip.ZIndex = 11
@@ -1295,10 +1299,9 @@ TabLine.Position = UDim2.new(0, 0, 1, 0)
 TabLine.BackgroundColor3 = M.LINE
 TabLine.BorderSizePixel = 0
 
--- Horizontal scroll untuk tab (kalau layar kekecilan)
+-- Horizontal scroll untuk tab (panjang, landscape)
 local TabScroll = Instance.new("ScrollingFrame", UI.TabStrip)
-TabScroll.Size = UDim2.new(1, -8, 1, 0)
-TabScroll.Position = UDim2.new(0, 4, 0, 0)
+TabScroll.Size = UDim2.new(1, 0, 1, 0)
 TabScroll.BackgroundTransparency = 1
 TabScroll.ScrollBarThickness = 0
 TabScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
@@ -1310,13 +1313,17 @@ local TabListLayout = Instance.new("UIListLayout", TabScroll)
 TabListLayout.FillDirection = Enum.FillDirection.Horizontal
 TabListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
 TabListLayout.VerticalAlignment = Enum.VerticalAlignment.Center
-TabListLayout.Padding = UDim.new(0, 2)
+TabListLayout.Padding = UDim.new(0, 4)
 TabListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+
+local TabScrollPad = Instance.new("UIPadding", TabScroll)
+TabScrollPad.PaddingLeft = UDim.new(0, 6)
+TabScrollPad.PaddingRight = UDim.new(0, 6)
 
 -- ============ CONTENT AREA ============
 local Container = Instance.new("Frame", UI.MainFrame)
-Container.Size = UDim2.new(1, 0, 1, -58)
-Container.Position = UDim2.new(0, 0, 0, 58)
+Container.Size = UDim2.new(1, 0, 1, -66)
+Container.Position = UDim2.new(0, 0, 0, 66)
 Container.BackgroundTransparency = 1
 Container.ZIndex = 11
 Container.ClipsDescendants = true
@@ -1367,21 +1374,27 @@ end)
 local TabButtons = {}
 local TabPages = {}
 
--- CreateTab: bikin tab pill mini horizontal + page scrollable
+-- CreateTab: bikin tab card PANJANG (auto-size, landscape feel)
 local function CreateTab(name, isDefault)
-    -- Tab pill (mini 50x20)
+    -- Tab card (auto-size lebar, 24px tinggi)
     local TabBtn = Instance.new("TextButton", TabScroll)
     TabBtn.AutomaticSize = Enum.AutomaticSize.X
-    TabBtn.Size = UDim2.new(0, 50, 0, 20)
+    TabBtn.Size = UDim2.new(0, 0, 0, 24)
     TabBtn.BackgroundColor3 = isDefault and M.TXT or M.BG_CARD
     TabBtn.BackgroundTransparency = 0
-    TabBtn.Text = " " .. name .. " "
-    TabBtn.Font = Enum.Font.GothamSemibold
-    TabBtn.TextSize = 9
+    TabBtn.Font = FONT
+    TabBtn.TextSize = 10
     TabBtn.TextColor3 = isDefault and M.BG_DEEP or M.TXT_DIM
     TabBtn.AutoButtonColor = false
     TabBtn.ZIndex = 12
+    -- Text dengan padding kanan-kiri biar card jadi panjang
+    TabBtn.Text = "  " .. name .. "  "
+    TabBtn.TextXAlignment = Enum.TextXAlignment.Center
     Instance.new("UICorner", TabBtn).CornerRadius = UDim.new(0, 4)
+
+    local TabPad = Instance.new("UIPadding", TabBtn)
+    TabPad.PaddingLeft = UDim.new(0, 10)
+    TabPad.PaddingRight = UDim.new(0, 10)
 
     -- Page (ScrollingFrame, scrollable)
     local Page = Instance.new("ScrollingFrame", Container)
@@ -1396,15 +1409,15 @@ local function CreateTab(name, isDefault)
     Page.ScrollingDirection = Enum.ScrollingDirection.Y
 
     local PageLayout = Instance.new("UIListLayout", Page)
-    PageLayout.Padding = UDim.new(0, 3)
+    PageLayout.Padding = UDim.new(0, 4)
     PageLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     PageLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
     local PagePad = Instance.new("UIPadding", Page)
-    PagePad.PaddingTop = UDim.new(0, 6)
-    PagePad.PaddingBottom = UDim.new(0, 6)
-    PagePad.PaddingLeft = UDim.new(0, 6)
-    PagePad.PaddingRight = UDim.new(0, 6)
+    PagePad.PaddingTop = UDim.new(0, 8)
+    PagePad.PaddingBottom = UDim.new(0, 8)
+    PagePad.PaddingLeft = UDim.new(0, 8)
+    PagePad.PaddingRight = UDim.new(0, 8)
 
     -- Click handler
     TabBtn.MouseButton1Click:Connect(function()
@@ -1442,42 +1455,42 @@ local function CreateTab(name, isDefault)
     return Page
 end
 
--- AddToggle: card mini full-width 36px, seluruh card bisa dipencet (gampang dipencet)
+-- AddToggle: card GEDE 44px, seluruh card bisa dipencet, switch 36x20
 local function AddToggle(page, text, callback)
     -- Card sebagai TextButton supaya seluruh area bisa dipencet
     local Card = Instance.new("TextButton", page)
-    Card.Size = UDim2.new(1, -4, 0, 36)
+    Card.Size = UDim2.new(1, -4, 0, 44)
     Card.BackgroundColor3 = M.BG_CARD
     Card.BackgroundTransparency = 0
     Card.Text = ""
     Card.AutoButtonColor = false
     Card.BorderSizePixel = 0
     Card.ZIndex = 11
-    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", Card).CornerRadius = UDim.new(0, 6)
 
     local Label = Instance.new("TextLabel", Card)
-    Label.Size = UDim2.new(1, -48, 1, 0)
-    Label.Position = UDim2.new(0, 10, 0, 0)
+    Label.Size = UDim2.new(1, -56, 1, 0)
+    Label.Position = UDim2.new(0, 12, 0, 0)
     Label.Text = text
-    Label.Font = Enum.Font.GothamMedium
-    Label.TextSize = 11
+    Label.Font = FONT
+    Label.TextSize = 12
     Label.TextColor3 = M.TXT_MID
     Label.TextXAlignment = Enum.TextXAlignment.Left
     Label.BackgroundTransparency = 1
     Label.ZIndex = 12
 
-    -- Mini toggle switch (28x16, gampang dilihat)
+    -- Toggle switch GEDE (36x20)
     local Switch = Instance.new("Frame", Card)
-    Switch.Size = UDim2.new(0, 28, 0, 16)
-    Switch.Position = UDim2.new(1, -36, 0.5, -8)
+    Switch.Size = UDim2.new(0, 36, 0, 20)
+    Switch.Position = UDim2.new(1, -44, 0.5, -10)
     Switch.BackgroundColor3 = M.BG_INPUT
     Switch.BorderSizePixel = 0
     Switch.ZIndex = 12
     Instance.new("UICorner", Switch).CornerRadius = UDim.new(1, 0)
 
     local Dot = Instance.new("Frame", Switch)
-    Dot.Size = UDim2.new(0, 12, 0, 12)
-    Dot.Position = UDim2.new(0, 2, 0.5, -6)
+    Dot.Size = UDim2.new(0, 16, 0, 16)
+    Dot.Position = UDim2.new(0, 2, 0.5, -8)
     Dot.BackgroundColor3 = M.TXT_DIM
     Dot.BorderSizePixel = 0
     Instance.new("UICorner", Dot).CornerRadius = UDim.new(1, 0)
@@ -1486,17 +1499,17 @@ local function AddToggle(page, text, callback)
     local state = false
     local function doToggle()
         state = not state
-        TweenService:Create(Dot, TweenInfo.new(0.18), {
-            Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+        TweenService:Create(Dot, TweenInfo.new(0.2), {
+            Position = state and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8),
             BackgroundColor3 = state and M.TXT or M.TXT_DIM
         }):Play()
-        TweenService:Create(Switch, TweenInfo.new(0.18), {
+        TweenService:Create(Switch, TweenInfo.new(0.2), {
             BackgroundColor3 = state and M.TXT or M.BG_INPUT
         }):Play()
-        TweenService:Create(Card, TweenInfo.new(0.18), {
+        TweenService:Create(Card, TweenInfo.new(0.2), {
             BackgroundColor3 = state and M.BG_CARD_A or M.BG_CARD
         }):Play()
-        TweenService:Create(Label, TweenInfo.new(0.18), {
+        TweenService:Create(Label, TweenInfo.new(0.2), {
             TextColor3 = state and M.TXT or M.TXT_MID
         }):Play()
         callback(state)
@@ -1520,24 +1533,24 @@ local function AddToggle(page, text, callback)
     return Card, Switch, Dot
 end
 
--- AddButton: action button mini full-width 36px (gampang dipencet)
+-- AddButton: action button GEDE 44px
 local function AddButton(page, text, callback)
     local Btn = Instance.new("TextButton", page)
-    Btn.Size = UDim2.new(1, -4, 0, 36)
+    Btn.Size = UDim2.new(1, -4, 0, 44)
     Btn.BackgroundColor3 = M.BG_CARD
     Btn.BackgroundTransparency = 0
     Btn.Text = text
-    Btn.Font = Enum.Font.GothamMedium
-    Btn.TextSize = 11
+    Btn.Font = FONT
+    Btn.TextSize = 12
     Btn.TextColor3 = M.TXT_MID
     Btn.TextXAlignment = Enum.TextXAlignment.Left
     Btn.AutoButtonColor = false
     Btn.BorderSizePixel = 0
     Btn.ZIndex = 11
-    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", Btn).CornerRadius = UDim.new(0, 6)
 
     local PadLeft = Instance.new("UIPadding", Btn)
-    PadLeft.PaddingLeft = UDim.new(0, 10)
+    PadLeft.PaddingLeft = UDim.new(0, 12)
 
     -- Hover & click feedback
     Btn.MouseEnter:Connect(function()
@@ -1569,78 +1582,78 @@ local function AddButton(page, text, callback)
     return Btn
 end
 
--- makeRow: container row untuk custom widgets (full-width 36px default, gampang dipencet)
+-- makeRow: container row untuk custom widgets (GEDE 44px default)
 local function makeRow(parent, height)
     local f = Instance.new("Frame", parent)
-    f.Size = UDim2.new(1, -4, 0, height or 36)
+    f.Size = UDim2.new(1, -4, 0, height or 44)
     f.BackgroundColor3 = M.BG_CARD
     f.BackgroundTransparency = 0
     f.BorderSizePixel = 0
-    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 5)
+    Instance.new("UICorner", f).CornerRadius = UDim.new(0, 6)
     return f
 end
 
--- makeLabel: text label di dalam row
+-- makeLabel: text label di dalam row (monospace)
 local function makeLabel(parent, text, xOff, w)
     local l = Instance.new("TextLabel", parent)
-    l.Size = UDim2.new(0, w or 110, 1, 0)
-    l.Position = UDim2.new(0, xOff or 10, 0, 0)
+    l.Size = UDim2.new(0, w or 120, 1, 0)
+    l.Position = UDim2.new(0, xOff or 12, 0, 0)
     l.Text = text
-    l.Font = Enum.Font.GothamMedium
-    l.TextSize = 11
+    l.Font = FONT
+    l.TextSize = 12
     l.TextColor3 = M.TXT_MID
     l.TextXAlignment = Enum.TextXAlignment.Left
     l.BackgroundTransparency = 1
     return l
 end
 
--- makeSwitch: mini toggle switch (28x16, Switch = TextButton yang clickable)
+-- makeSwitch: toggle switch GEDE (36x20, Switch = TextButton yang clickable)
 local function makeSwitch(parent)
     local Switch = Instance.new("TextButton", parent)
-    Switch.Size = UDim2.new(0, 28, 0, 16)
-    Switch.Position = UDim2.new(1, -36, 0.5, -8)
+    Switch.Size = UDim2.new(0, 36, 0, 20)
+    Switch.Position = UDim2.new(1, -44, 0.5, -10)
     Switch.BackgroundColor3 = M.BG_INPUT
     Switch.BorderSizePixel = 0
     Switch.Text = ""
     Switch.AutoButtonColor = false
     Instance.new("UICorner", Switch).CornerRadius = UDim.new(1, 0)
     local Dot = Instance.new("Frame", Switch)
-    Dot.Size = UDim2.new(0, 12, 0, 12)
-    Dot.Position = UDim2.new(0, 2, 0.5, -6)
+    Dot.Size = UDim2.new(0, 16, 0, 16)
+    Dot.Position = UDim2.new(0, 2, 0.5, -8)
     Dot.BackgroundColor3 = M.TXT_DIM
     Dot.BorderSizePixel = 0
     Instance.new("UICorner", Dot).CornerRadius = UDim.new(1, 0)
     return Switch, Dot
 end
 
--- animSwitch: animasi toggle (mono style, match switch 28x16)
+-- animSwitch: animasi toggle (match switch 36x20)
 local function animSwitch(Switch, Dot, state)
-    TweenService:Create(Dot, TweenInfo.new(0.18), {
-        Position = state and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+    TweenService:Create(Dot, TweenInfo.new(0.2), {
+        Position = state and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8),
         BackgroundColor3 = state and M.TXT or M.TXT_DIM
     }):Play()
-    TweenService:Create(Switch, TweenInfo.new(0.18), {
+    TweenService:Create(Switch, TweenInfo.new(0.2), {
         BackgroundColor3 = state and M.TXT or M.BG_INPUT
     }):Play()
 end
 
--- makeMwSlider: slider mini mono (untuk Moonwalk)
+-- makeMwSlider: slider mono (untuk Moonwalk)
 local function makeMwSlider(labelText, key, minVal, maxVal, decimals)
-    local row = makeRow(TabMoonwalk, 36)
-    makeLabel(row, labelText, 8, 90)
+    local row = makeRow(TabMoonwalk, 44)
+    makeLabel(row, labelText, 12, 120)
 
     local valLbl = Instance.new("TextLabel", row)
-    valLbl.Size = UDim2.new(0, 36, 0, 12)
-    valLbl.Position = UDim2.new(1, -44, 0, 4)
+    valLbl.Size = UDim2.new(0, 48, 0, 16)
+    valLbl.Position = UDim2.new(1, -56, 0, 6)
     valLbl.BackgroundTransparency = 1
     valLbl.TextColor3 = M.TXT
-    valLbl.TextSize = 9
-    valLbl.Font = Enum.Font.GothamBold
+    valLbl.TextSize = 11
+    valLbl.Font = FONT
     valLbl.TextXAlignment = Enum.TextXAlignment.Right
 
     local trackBg = Instance.new("Frame", row)
-    trackBg.Size = UDim2.new(1, -16, 0, 3)
-    trackBg.Position = UDim2.new(0, 8, 1, -10)
+    trackBg.Size = UDim2.new(1, -24, 0, 4)
+    trackBg.Position = UDim2.new(0, 12, 1, -12)
     trackBg.BackgroundColor3 = M.BG_INPUT
     trackBg.BorderSizePixel = 0
     Instance.new("UICorner", trackBg).CornerRadius = UDim.new(0, 2)
@@ -1652,7 +1665,7 @@ local function makeMwSlider(labelText, key, minVal, maxVal, decimals)
     Instance.new("UICorner", trackFill).CornerRadius = UDim.new(0, 2)
 
     local thumb = Instance.new("Frame", trackBg)
-    thumb.Size = UDim2.new(0, 8, 0, 8)
+    thumb.Size = UDim2.new(0, 12, 0, 12)
     thumb.AnchorPoint = Vector2.new(0.5, 0.5)
     thumb.BackgroundColor3 = M.TXT
     thumb.BorderSizePixel = 0
@@ -1877,7 +1890,7 @@ local faSpeedLabel = Instance.new("TextLabel", faSpeedFrame)
 faSpeedLabel.Size = UDim2.new(1, -90, 1, 0)
 faSpeedLabel.Position = UDim2.new(0, 10, 0, 0)
 faSpeedLabel.Text = "Fast Animations Speed"
-faSpeedLabel.Font = Enum.Font.Gotham
+faSpeedLabel.Font = Enum.Font.Code
 faSpeedLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
 faSpeedLabel.TextSize = 11
 faSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -1888,7 +1901,7 @@ faSpeedBox.Size = UDim2.new(0, 50, 0, 22)
 faSpeedBox.Position = UDim2.new(1, -58, 0.5, -11)
 faSpeedBox.BackgroundColor3 = COLORS.THEME_DARK
 faSpeedBox.Text = tostring(Extras.fastAnimSpeed)
-faSpeedBox.Font = Enum.Font.GothamSemibold
+faSpeedBox.Font = Enum.Font.Code
 faSpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 faSpeedBox.TextSize = 11
 faSpeedBox.PlaceholderText = "2-10"
@@ -2194,7 +2207,7 @@ healOthersToggleBtn.BackgroundColor3 = COLORS.THEME_BTN
 healOthersToggleBtn.BackgroundTransparency = 0.2
 healOthersToggleBtn.Text = "Instant Heal Others: OFF"
 healOthersToggleBtn.TextColor3 = Color3.fromRGB(190, 192, 200)
-healOthersToggleBtn.Font = Enum.Font.Gotham
+healOthersToggleBtn.Font = Enum.Font.Code
 healOthersToggleBtn.TextSize = 11
 healOthersToggleBtn.TextXAlignment = Enum.TextXAlignment.Left
 Instance.new("UICorner", healOthersToggleBtn).CornerRadius = UDim.new(0, 6)
@@ -2238,7 +2251,7 @@ local function updatePlayerList()
                 playerBtn.BackgroundTransparency = 0.2
                 playerBtn.Text = playerName
                 playerBtn.TextColor3 = Color3.fromRGB(190, 192, 200)
-                playerBtn.Font = Enum.Font.Gotham
+                playerBtn.Font = Enum.Font.Code
                 playerBtn.TextSize = 11
                 playerBtn.ZIndex = 10
                 Instance.new("UICorner", playerBtn).CornerRadius = UDim.new(0, 4)
@@ -2340,7 +2353,7 @@ do -- Gen Fast Bypass toggle
     gbLabel.Size = UDim2.new(0, 120, 1, 0)
     gbLabel.Position = UDim2.new(0, 10, 0, 0)
     gbLabel.Text = "Gen Fast Bypass"
-    gbLabel.Font = Enum.Font.Gotham
+    gbLabel.Font = Enum.Font.Code
     gbLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
     gbLabel.TextSize = 11
     gbLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -2351,7 +2364,7 @@ do -- Gen Fast Bypass toggle
     gbKeyBtn.Position = UDim2.new(1, -86, 0.5, -10)
     gbKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
     gbKeyBtn.Text = "G"
-    gbKeyBtn.Font = Enum.Font.GothamSemibold
+    gbKeyBtn.Font = Enum.Font.Code
     gbKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
     gbKeyBtn.TextSize = 10
     gbKeyBtn.Visible = not IsMobile
@@ -2379,15 +2392,15 @@ do -- Gen Fast Bypass toggle
     end)
 
     local gbSwitch = Instance.new("TextButton", gbFrame)
-    gbSwitch.Size = UDim2.new(0, 28, 0, 16)
-    gbSwitch.Position = UDim2.new(1, -36, 0.5, -8)
+    gbSwitch.Size = UDim2.new(0, 36, 0, 20)
+    gbSwitch.Position = UDim2.new(1, -44, 0.5, -10)
     gbSwitch.BackgroundColor3 = Color3.fromRGB(10, 11, 14)
     gbSwitch.Text = ""
     gbSwitch.AutoButtonColor = false
     Instance.new("UICorner", gbSwitch).CornerRadius = UDim.new(1, 0)
     local gbDot = Instance.new("Frame", gbSwitch)
-    gbDot.Size = UDim2.new(0, 12, 0, 12)
-    gbDot.Position = UDim2.new(0, 2, 0.5, -6)
+    gbDot.Size = UDim2.new(0, 16, 0, 16)
+    gbDot.Position = UDim2.new(0, 2, 0.5, -8)
     gbDot.BackgroundColor3 = Color3.fromRGB(130, 132, 142)
     Instance.new("UICorner", gbDot).CornerRadius = UDim.new(1, 0)
 
@@ -2396,11 +2409,11 @@ do -- Gen Fast Bypass toggle
         gbState = not gbState
         GenBypass.Enabled = gbState
         GB_UpdateButton()
-        TweenService:Create(gbDot, TweenInfo.new(0.18), {
-            Position = gbState and UDim2.new(1, -14, 0.5, -6) or UDim2.new(0, 2, 0.5, -6),
+        TweenService:Create(gbDot, TweenInfo.new(0.2), {
+            Position = gbState and UDim2.new(1, -18, 0.5, -8) or UDim2.new(0, 2, 0.5, -8),
             BackgroundColor3 = gbState and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 132, 142)
         }):Play()
-        TweenService:Create(gbSwitch, TweenInfo.new(0.18), {
+        TweenService:Create(gbSwitch, TweenInfo.new(0.2), {
             BackgroundColor3 = gbState and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(10, 11, 14)
         }):Play()
     end)
@@ -2487,7 +2500,7 @@ speedBox.Size = UDim2.new(0, 50, 0, 22)
 speedBox.Position = UDim2.new(1, -58, 0.5, -11)
 speedBox.BackgroundColor3 = COLORS.THEME_DARK
 speedBox.Text = tostring(Extras.CustomSpeed)
-speedBox.Font = Enum.Font.GothamSemibold
+speedBox.Font = Enum.Font.Code
 speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 speedBox.TextSize = 11
 speedBox.ClearTextOnFocus = false
@@ -2517,7 +2530,7 @@ fovBox.Size = UDim2.new(0, 50, 0, 22)
 fovBox.Position = UDim2.new(1, -98, 0.5, -11)
 fovBox.BackgroundColor3 = COLORS.THEME_DARK
 fovBox.Text = tostring(Extras.fovValue)
-fovBox.Font = Enum.Font.GothamSemibold
+fovBox.Font = Enum.Font.Code
 fovBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 fovBox.TextSize = 11
 fovBox.PlaceholderText = "50-150"
@@ -2555,7 +2568,7 @@ silentKeyBtn.Position = UDim2.new(1, -78, 0.5, -10)
 silentKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
 silentKeyBtn.BackgroundTransparency = 0.2
 silentKeyBtn.Text = "H"
-silentKeyBtn.Font = Enum.Font.GothamBold
+silentKeyBtn.Font = Enum.Font.Code
 silentKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
 silentKeyBtn.TextSize = 10
 Instance.new("UICorner", silentKeyBtn).CornerRadius = UDim.new(0, 4)
@@ -2592,7 +2605,7 @@ fovBox.Position = UDim2.new(1, -80, 0.5, -11)
 fovBox.BackgroundColor3 = COLORS.THEME_DARK
 fovBox.BackgroundTransparency = 0.1
 fovBox.Text = tostring(FOV_RADIUS)
-fovBox.Font = Enum.Font.Gotham
+fovBox.Font = Enum.Font.Code
 fovBox.TextColor3 = Color3.fromRGB(190, 192, 200)
 fovBox.TextSize = 11
 fovBox.ClearTextOnFocus = false
@@ -2619,7 +2632,7 @@ if targetHeaderRow_s then targetHeaderRow_s:Destroy() end
 local targetHeader = makeLabel(targetHeaderRow, "Target Selection", 10, 160)
 targetHeader.TextColor3 = Color3.fromRGB(160, 130, 180)
 targetHeader.TextSize = 10
-targetHeader.Font = Enum.Font.GothamSemibold
+targetHeader.Font = Enum.Font.Code
 
 local targetRow = makeRow(TabCombat, 36)
 local targetLayout = Instance.new("UIListLayout", targetRow)
@@ -2637,7 +2650,7 @@ for _, mode in ipairs(targetModes) do
         btn.BackgroundColor3 = mode == SilentTargetMode and COLORS.THEME or COLORS.THEME_DARK
         btn.BackgroundTransparency = mode == SilentTargetMode and 0.1 or 0.4
         btn.Text = mode
-        btn.Font = Enum.Font.GothamSemibold
+        btn.Font = Enum.Font.Code
         btn.TextColor3 = mode == SilentTargetMode and Color3.fromRGB(255, 255, 255) or Color3.fromRGB(130, 132, 142)
         btn.TextSize = 10
         Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 5)
@@ -2677,7 +2690,7 @@ shootKeyBtn.Position = UDim2.new(1, -78, 0.5, -10)
 shootKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
 shootKeyBtn.BackgroundTransparency = 0.2
 shootKeyBtn.Text = "---"
-shootKeyBtn.Font = Enum.Font.GothamBold
+shootKeyBtn.Font = Enum.Font.Code
 shootKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
 shootKeyBtn.TextSize = 10
 Instance.new("UICorner", shootKeyBtn).CornerRadius = UDim.new(0, 4)
@@ -2886,7 +2899,7 @@ local msBtnLabel = Instance.new("TextLabel", MobileShootBtn)
 msBtnLabel.Size = UDim2.new(1, 0, 1, 0)
 msBtnLabel.BackgroundTransparency = 1
 msBtnLabel.Text = "Shoot"
-msBtnLabel.Font = Enum.Font.GothamBold
+msBtnLabel.Font = Enum.Font.Code
 msBtnLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 msBtnLabel.TextSize = 13
 msBtnLabel.ZIndex = 11
@@ -3391,7 +3404,7 @@ end)
     rangeBox.Position = UDim2.new(1, -58, 0.5, -11)
     rangeBox.BackgroundColor3 = COLORS.THEME_DARK
     rangeBox.Text = tostring(PARRY_MAX_DISTANCE)
-    rangeBox.Font = Enum.Font.GothamSemibold
+    rangeBox.Font = Enum.Font.Code
     rangeBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     rangeBox.TextSize = 11
     rangeBox.ClearTextOnFocus = false
@@ -3417,7 +3430,7 @@ end)
     lookBox.Position = UDim2.new(1, -58, 0.5, -11)
     lookBox.BackgroundColor3 = COLORS.THEME_DARK
     lookBox.Text = tostring(PARRY_LOOK_THRESHOLD)
-    lookBox.Font = Enum.Font.GothamSemibold
+    lookBox.Font = Enum.Font.Code
     lookBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     lookBox.TextSize = 11
     lookBox.ClearTextOnFocus = false
@@ -3442,7 +3455,7 @@ animPrev.Size = UDim2.new(0, 22, 0, 22)
 animPrev.Position = UDim2.new(0, 104, 0.5, -11)
 animPrev.BackgroundColor3 = COLORS.THEME_BTN
 animPrev.Text = "<"
-animPrev.Font = Enum.Font.GothamSemibold
+animPrev.Font = Enum.Font.Code
 animPrev.TextColor3 = Color3.fromRGB(255, 255, 255)
 animPrev.TextSize = 12
 Instance.new("UICorner", animPrev).CornerRadius = UDim.new(0, 5)
@@ -3454,7 +3467,7 @@ animDisplay.Size = UDim2.new(0, 90, 0, 22)
 animDisplay.Position = UDim2.new(0, 130, 0.5, -11)
 animDisplay.BackgroundColor3 = COLORS.THEME_DARK
 animDisplay.Text = PARRY_ANIMS[selectedAnimIndex].name
-animDisplay.Font = Enum.Font.GothamSemibold
+animDisplay.Font = Enum.Font.Code
 animDisplay.TextColor3 = Color3.fromRGB(255, 255, 255)
 animDisplay.TextSize = 11
 animDisplay.TextXAlignment = Enum.TextXAlignment.Center
@@ -3467,7 +3480,7 @@ animNext.Size = UDim2.new(0, 22, 0, 22)
 animNext.Position = UDim2.new(0, 224, 0.5, -11)
 animNext.BackgroundColor3 = COLORS.THEME_BTN
 animNext.Text = ">"
-animNext.Font = Enum.Font.GothamSemibold
+animNext.Font = Enum.Font.Code
 animNext.TextColor3 = Color3.fromRGB(255, 255, 255)
 animNext.TextSize = 12
 Instance.new("UICorner", animNext).CornerRadius = UDim.new(0, 5)
@@ -3498,7 +3511,7 @@ end)
     animTBox.Position = UDim2.new(1, -58, 0.5, -11)
     animTBox.BackgroundColor3 = COLORS.THEME_DARK
     animTBox.Text = tostring(PARRY_ANIMATION_START_THRESHOLD)
-    animTBox.Font = Enum.Font.GothamSemibold
+    animTBox.Font = Enum.Font.Code
     animTBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     animTBox.TextSize = 11
     animTBox.ClearTextOnFocus = false
@@ -3622,7 +3635,7 @@ local function setupMoonwalkFeatures()
     keybindBtn.Position          = UDim2.new(1, -90, 0.5, -11)
     keybindBtn.BackgroundColor3  = COLORS.THEME_DARK
     keybindBtn.Text              = "M"
-    keybindBtn.Font              = Enum.Font.GothamSemibold
+    keybindBtn.Font              = Enum.Font.Code
     keybindBtn.TextColor3        = Color3.fromRGB(255, 255, 255)
     keybindBtn.TextSize          = 10
     Instance.new("UICorner", keybindBtn).CornerRadius = UDim.new(0, 5)
@@ -3758,7 +3771,7 @@ end
         valLbl.BackgroundTransparency = 1
         valLbl.TextColor3         = Color3.fromRGB(170, 140, 200)
         valLbl.TextSize           = 10
-        valLbl.Font               = Enum.Font.GothamBold
+        valLbl.Font               = Enum.Font.Code
         valLbl.TextXAlignment     = Enum.TextXAlignment.Right
 
         local trackBg = Instance.new("Frame", row)
@@ -3907,7 +3920,7 @@ local bgLabel = Instance.new("TextLabel", bgCountFrame)
 bgLabel.Size = UDim2.new(1, -90, 1, 0)
 bgLabel.Position = UDim2.new(0, 10, 0, 0)
 bgLabel.Text = "Break Count"
-bgLabel.Font = Enum.Font.Gotham
+bgLabel.Font = Enum.Font.Code
 bgLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
 bgLabel.TextSize = 11
 bgLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -3918,7 +3931,7 @@ bgBox.Size = UDim2.new(0, 50, 0, 22)
 bgBox.Position = UDim2.new(1, -58, 0.5, -11)
 bgBox.BackgroundColor3 = COLORS.THEME_DARK
 bgBox.Text = tostring(Extras.breakGenCount)
-bgBox.Font = Enum.Font.GothamSemibold
+bgBox.Font = Enum.Font.Code
 bgBox.TextColor3 = Color3.fromRGB(255, 255, 255)
 bgBox.TextSize = 11
 bgBox.PlaceholderText = "2-10"
@@ -3944,7 +3957,7 @@ local maskedBar = Instance.new("TextButton", TabKiller)
 maskedBar.Size = UDim2.new(1, -8, 0, 32)
 maskedBar.BackgroundColor3 = COLORS.THEME
 maskedBar.BackgroundTransparency = 0.1
-maskedBar.Font = Enum.Font.GothamBold
+maskedBar.Font = Enum.Font.Code
 maskedBar.TextColor3 = Color3.fromRGB(255, 255, 255)
 maskedBar.TextSize = 12
 maskedBar.Text = "▶  The Masked"
@@ -3966,7 +3979,7 @@ local function addMaskedButton(name, cb)
     btn.Size = UDim2.new(1, 0, 0, 30)
     btn.BackgroundColor3 = COLORS.THEME_BTN
     btn.BackgroundTransparency = 0.2
-    btn.Font = Enum.Font.GothamSemibold
+    btn.Font = Enum.Font.Code
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     btn.TextSize = 11
     btn.Text = name
@@ -4006,7 +4019,7 @@ myersKeyBtn.Position = UDim2.new(1, -78, 0.5, -10)
 myersKeyBtn.BackgroundColor3 = COLORS.THEME_DARK
 myersKeyBtn.BackgroundTransparency = 0.2
 myersKeyBtn.Text = "---"
-myersKeyBtn.Font = Enum.Font.GothamBold
+myersKeyBtn.Font = Enum.Font.Code
 myersKeyBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
 myersKeyBtn.TextSize = 10
 Instance.new("UICorner", myersKeyBtn).CornerRadius = UDim.new(0, 4)
@@ -4050,7 +4063,7 @@ local function setupMyersGrabBtn()
         mgLabel.Size = UDim2.new(1, 0, 1, 0)
         mgLabel.BackgroundTransparency = 1
         mgLabel.Text = "Grab"
-        mgLabel.Font = Enum.Font.GothamBold
+        mgLabel.Font = Enum.Font.Code
         mgLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
         mgLabel.TextSize = 14
 
@@ -4132,7 +4145,7 @@ local function setupVeilTabFeatures()
     fovLabel.Size = UDim2.new(1, -90, 1, 0)
     fovLabel.Position = UDim2.new(0, 10, 0, 0)
     fovLabel.Text = "FOV Radius"
-    fovLabel.Font = Enum.Font.Gotham
+    fovLabel.Font = Enum.Font.Code
     fovLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
     fovLabel.TextSize = 11
     fovLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4142,7 +4155,7 @@ local function setupVeilTabFeatures()
     fovBox.Position = UDim2.new(1, -58, 0.5, -11)
     fovBox.BackgroundColor3 = COLORS.THEME_DARK
     fovBox.Text = tostring(VeilConfig.FOV)
-    fovBox.Font = Enum.Font.GothamSemibold
+    fovBox.Font = Enum.Font.Code
     fovBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     fovBox.TextSize = 11
     fovBox.PlaceholderText = "50-500"
@@ -4173,7 +4186,7 @@ local function setupVeilTabFeatures()
     speedLabel.Size = UDim2.new(1, -90, 1, 0)
     speedLabel.Position = UDim2.new(0, 10, 0, 0)
     speedLabel.Text = "Spear Speed"
-    speedLabel.Font = Enum.Font.Gotham
+    speedLabel.Font = Enum.Font.Code
     speedLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
     speedLabel.TextSize = 11
     speedLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4183,7 +4196,7 @@ local function setupVeilTabFeatures()
     speedBox.Position = UDim2.new(1, -58, 0.5, -11)
     speedBox.BackgroundColor3 = COLORS.THEME_DARK
     speedBox.Text = tostring(VeilConfig.SpearSpeed)
-    speedBox.Font = Enum.Font.GothamSemibold
+    speedBox.Font = Enum.Font.Code
     speedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     speedBox.TextSize = 11
     speedBox.PlaceholderText = "50-400"
@@ -4214,7 +4227,7 @@ local function setupVeilTabFeatures()
     gravLabel.Size = UDim2.new(1, -90, 1, 0)
     gravLabel.Position = UDim2.new(0, 10, 0, 0)
     gravLabel.Text = "Gravity"
-    gravLabel.Font = Enum.Font.Gotham
+    gravLabel.Font = Enum.Font.Code
     gravLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
     gravLabel.TextSize = 11
     gravLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4224,7 +4237,7 @@ local function setupVeilTabFeatures()
     gravBox.Position = UDim2.new(1, -58, 0.5, -11)
     gravBox.BackgroundColor3 = COLORS.THEME_DARK
     gravBox.Text = tostring(math.floor(VeilConfig.Gravity))
-    gravBox.Font = Enum.Font.GothamSemibold
+    gravBox.Font = Enum.Font.Code
     gravBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     gravBox.TextSize = 11
     gravBox.PlaceholderText = "0-300"
@@ -4255,7 +4268,7 @@ local function setupVeilTabFeatures()
     hpLabel.Size = UDim2.new(1, -90, 1, 0)
     hpLabel.Position = UDim2.new(0, 10, 0, 0)
     hpLabel.Text = "Horizontal Factor"
-    hpLabel.Font = Enum.Font.Gotham
+    hpLabel.Font = Enum.Font.Code
     hpLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
     hpLabel.TextSize = 11
     hpLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4265,7 +4278,7 @@ local function setupVeilTabFeatures()
     hpBox.Position = UDim2.new(1, -58, 0.5, -11)
     hpBox.BackgroundColor3 = COLORS.THEME_DARK
     hpBox.Text = tostring(VeilConfig.HorizontalPredictFactor)
-    hpBox.Font = Enum.Font.GothamSemibold
+    hpBox.Font = Enum.Font.Code
     hpBox.TextColor3 = Color3.fromRGB(255, 255, 255)
     hpBox.TextSize = 11
     hpBox.PlaceholderText = "0-10"
@@ -4298,7 +4311,7 @@ local function setupVeilTabFeatures()
     partLabel.Size = UDim2.new(1, -90, 1, 0)
     partLabel.Position = UDim2.new(0, 10, 0, 0)
     partLabel.Text = "Target Part"
-    partLabel.Font = Enum.Font.Gotham
+    partLabel.Font = Enum.Font.Code
     partLabel.TextColor3 = Color3.fromRGB(190, 192, 200)
     partLabel.TextSize = 11
     partLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -4308,7 +4321,7 @@ local function setupVeilTabFeatures()
     partBtn.Position = UDim2.new(1, -68, 0.5, -11)
     partBtn.BackgroundColor3 = COLORS.THEME_DARK
     partBtn.Text = parts[partIdx]
-    partBtn.Font = Enum.Font.GothamSemibold
+    partBtn.Font = Enum.Font.Code
     partBtn.TextColor3 = Color3.fromRGB(130, 132, 142)
     partBtn.TextSize = 10
     Instance.new("UICorner", partBtn).CornerRadius = UDim.new(0, 5)
